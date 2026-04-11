@@ -1,0 +1,132 @@
+package com.telemedicine.models;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+/**
+ * Represents a consultation appointment in the Telemedicine System.
+ * Contains references to Patient, Doctor, and Prescription information.
+ * 
+ * @author Telemedicine Team
+ * @version 1.0
+ */
+public class Appointment implements Serializable {
+    private static final long serialVersionUID = 1L;
+    
+    // Attributes
+    private String appointmentId;
+    private Patient patient;
+    private Doctor doctor;
+    private LocalDateTime appointmentDateTime;
+    private String symptoms;
+    private String status; // PENDING, CONFIRMED, COMPLETED, CANCELLED
+    private String consultationMode; // VIDEO, PHONE, CHAT
+    private LocalDateTime createdAt;
+    private Prescription prescription;
+    
+    // Constructor
+    public Appointment(String appointmentId, Patient patient, Doctor doctor,
+                      LocalDateTime appointmentDateTime, String symptoms,
+                      String consultationMode) {
+        this.appointmentId = appointmentId;
+        this.patient = patient;
+        this.doctor = doctor;
+        this.appointmentDateTime = appointmentDateTime;
+        this.symptoms = symptoms;
+        this.consultationMode = consultationMode;
+        this.status = "PENDING";
+        this.createdAt = LocalDateTime.now();
+        this.prescription = null;
+    }
+    
+    // Methods
+    public void confirmAppointment() {
+        if (status.equals("PENDING")) {
+            this.status = "CONFIRMED";
+            System.out.println("✓ Appointment confirmed.");
+        } else {
+            System.out.println("✗ Cannot confirm. Current status: " + status);
+        }
+    }
+    
+    public void cancelAppointment(String reason) {
+        if (!status.equals("COMPLETED")) {
+            this.status = "CANCELLED";
+            System.out.println("✓ Appointment cancelled. Reason: " + reason);
+        } else {
+            System.out.println("✗ Cannot cancel completed appointment.");
+        }
+    }
+    
+    public void completeAppointment() {
+        if (status.equals("CONFIRMED") || status.equals("PENDING")) {
+            this.status = "COMPLETED";
+        }
+    }
+    
+    public void displayAppointmentDetails() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        
+        System.out.println("  Appointment ID: " + appointmentId);
+        System.out.println("  Patient: " + patient.getName());
+        System.out.println("  Doctor: Dr. " + doctor.getName() + 
+                         " (" + doctor.getSpecialization() + ")");
+        System.out.println("  Date & Time: " + appointmentDateTime.format(formatter));
+        System.out.println("  Mode: " + consultationMode);
+        System.out.println("  Status: " + status);
+        System.out.println("  Symptoms: " + symptoms);
+        System.out.println("  Fee: Rs. " + doctor.getConsultationFee());
+    }
+    
+    public boolean isWithin24Hours() {
+        LocalDateTime now = LocalDateTime.now();
+        return appointmentDateTime.minusHours(24).isBefore(now) &&
+               appointmentDateTime.isAfter(now);
+    }
+    
+    // Getters and Setters
+    public String getAppointmentId() { 
+        return appointmentId; 
+    }
+    
+    public Patient getPatient() { 
+        return patient; 
+    }
+    
+    public Doctor getDoctor() { 
+        return doctor; 
+    }
+    
+    public LocalDateTime getAppointmentDateTime() { 
+        return appointmentDateTime; 
+    }
+    
+    public String getStatus() { 
+        return status; 
+    }
+    
+    public void setStatus(String status) { 
+        this.status = status; 
+    }
+    
+    public String getSymptoms() { 
+        return symptoms; 
+    }
+    
+    public String getConsultationMode() { 
+        return consultationMode; 
+    }
+    
+    public Prescription getPrescription() { 
+        return prescription; 
+    }
+    
+    public void setPrescription(Prescription prescription) {
+        this.prescription = prescription;
+    }
+    
+    public LocalDateTime getCreatedAt() { 
+        return createdAt; 
+    }
+}
