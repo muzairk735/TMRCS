@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @author Telemedicine Team
  * @version 1.0
  */
-public class Patient extends Person implements Serializable, IAppointmentViewer {
+public class Patient extends Person implements Serializable, AppointmentViewerInterface {
     private static final long serialVersionUID = 1L;
     
     // Patient-specific attributes

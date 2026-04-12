@@ -4,7 +4,7 @@ package com.telemedicine.models;
  * Interface for data persistence operations.
  * Defines contracts for saving and loading data to/from storage.
  */
-public interface IPersistable {
+public interface PersistableInterface {
     
     /**
      * Saves data to persistent storage.

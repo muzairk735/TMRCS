@@ -4,7 +4,7 @@ package com.telemedicine.models;
  * Interface for appointment management operations.
  * Implemented by user types that can view and manage appointments.
  */
-public interface IAppointmentViewer {
+public interface AppointmentViewerInterface {
     
     /**
      * Displays all appointments for the user.

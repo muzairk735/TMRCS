@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @author Telemedicine Team
  * @version 1.0
  */
-public class FileHandler implements IPersistable {
+public class FileHandler implements PersistableInterface {
     private String dataDirectory = "data/";
     
     public FileHandler() {

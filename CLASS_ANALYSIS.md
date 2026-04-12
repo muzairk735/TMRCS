@@ -42,7 +42,7 @@
 
 ## 2. INTERFACE DEFINITIONS
 
-### **IUser Interface**
+### **UserInterface Interface**
 ```
 Package: com.telemedicine.models
 Purpose: Defines common user authentication and profile management operations
@@ -116,7 +116,7 @@ Design Rationale:
 #### **Person** (Abstract Base Class)
 ```
 Package: com.telemedicine.models
-Implements: Serializable, IUser
+Implements: Serializable, UserInterface
 
 Attributes:
   - userId: String (protected)
@@ -126,7 +126,7 @@ Attributes:
   - password: String (protected)
   - registrationDate: LocalDate (protected)
 
-Methods (IUser Implementation):
+Methods (UserInterface Implementation):
   + login(email: String, password: String): boolean
   + displayProfile(): void (abstract - implemented by subclasses)
   + updateProfile(name: String): void
@@ -150,7 +150,7 @@ Purpose:
 #### **Patient** (Extends Person)
 ```
 Package: com.telemedicine.models
-Implements: Serializable, IAppointmentViewer
+Implements: Serializable, AppointmentViewerInterface
 
 Attributes:
   - age: int
@@ -174,14 +174,14 @@ Methods (Patient-specific):
 Purpose:
   - Represents a patient in the system
   - Manages personal health data and medical history
-  - Implements IAppointmentViewer for appointment management
+  - Implements AppointmentViewerInterface for appointment management
   - Books appointments and views medical records
 ```
 
 #### **Doctor** (Extends Person)
 ```
 Package: com.telemedicine.models
-Implements: Serializable, IAppointmentViewer
+Implements: Serializable, AppointmentViewerInterface
 
 Attributes:
   - specialization: String
@@ -209,7 +209,7 @@ Methods (Doctor-specific):
 Purpose:
   - Represents a doctor in the system
   - Manages availability and consultation appointments
-  - Implements IAppointmentViewer for appointment operations
+  - Implements AppointmentViewerInterface for appointment operations
   - Issues prescriptions and conducts consultations
 ```
   + viewAppointments(status): void
@@ -393,12 +393,12 @@ Purpose:
 #### **FileHandler**
 ```
 Package: com.telemedicine.utils
-Implements: IPersistable
+Implements: PersistableInterface
 
 Attributes:
   - dataDirectory: String = "data/"
 
-Methods (IPersistable Implementation):
+Methods (PersistableInterface Implementation):
   + save(): void (generic save for all data)
   + load(): void (generic load for all data)
 
@@ -479,19 +479,19 @@ Purpose:
 ### Interface Implementations
 
 ```
-IUser (Interface)
+UserInterface (Interface)
   └── Implemented by:
       ├── Person (abstract)
       │   ├── Patient
       │   ├── Doctor
       │   └── Admin
 
-IAppointmentViewer (Interface)
+AppointmentViewerInterface (Interface)
   └── Implemented by:
       ├── Patient (manages own appointments)
       └── Doctor (manages patient appointments)
 
-IPersistable (Interface)
+PersistableInterface (Interface)
   └── Implemented by:
       └── FileHandler (system data persistence)
 
@@ -568,10 +568,10 @@ FileHandler ──────────> All model classes (Uses)
 | From | To | Type | Cardinality | Strength | Description |
 |------|-----|------|-------------|----------|-------------|
 | **Interface Implementations** |
-| Person | IUser | Interface | - | Strong | Person class implements IUser interface |
-| Patient | IAppointmentViewer | Interface | - | Strong | Patient implements appointment viewing operations |
-| Doctor | IAppointmentViewer | Interface | - | Strong | Doctor implements appointment viewing operations |
-| FileHandler | IPersistable | Interface | - | Strong | FileHandler implements persistence operations |
+| Person | UserInterface | Interface | - | Strong | Person class implements UserInterface interface |
+| Patient | AppointmentViewerInterface | Interface | - | Strong | Patient implements appointment viewing operations |
+| Doctor | AppointmentViewerInterface | Interface | - | Strong | Doctor implements appointment viewing operations |
+| FileHandler | PersistableInterface | Interface | - | Strong | FileHandler implements persistence operations |
 | **Inheritance** |
 | Patient | Person | Inheritance | 1:1 | Strong | Patient extends Person |
 | Doctor | Person | Inheritance | 1:1 | Strong | Doctor extends Person |

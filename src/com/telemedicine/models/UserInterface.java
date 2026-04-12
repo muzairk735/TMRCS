@@ -4,7 +4,7 @@ package com.telemedicine.models;
  * Interface for all user types in the Telemedicine System.
  * Defines common operations that all users (Patient, Doctor, Admin) must support.
  */
-public interface IUser {
+public interface UserInterface {
     
     /**
      * Authenticates a user with email and password.

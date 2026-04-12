@@ -163,16 +163,16 @@ apt.completeAppointment();            // Updates apt
 
 ---
 
-## Issue #5: IUser Interface Completeness
+### **UserInterface Interface Completeness**
 
 **Priority:** LOW  
 **Category:** Interface Design  
-**Location:** Person.java, IUser.java, Admin.java
+**Location:** Person.java, UserInterface.java, Admin.java
 
 **Description:**
 Actually, this is implemented CORRECTLY. No issue here.
 
-IUser defines:
+UserInterface defines:
 - login() ✅
 - displayProfile() ✅ (abstract in Person)
 - updateProfile() ✅ (3 overloads)
