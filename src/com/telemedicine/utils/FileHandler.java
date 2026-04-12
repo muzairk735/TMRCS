@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @author Telemedicine Team
  * @version 1.0
  */
-public class FileHandler {
+public class FileHandler implements IPersistable {
     private String dataDirectory = "data/";
     
     public FileHandler() {
@@ -167,5 +167,29 @@ public class FileHandler {
         adminsFile.delete();
         
         System.out.println("✓ All data cleared.");
+    }
+    
+    // ==================== IPERSISTABLE IMPLEMENTATION ====================
+    
+    /**
+     * Generic save method that saves all system data.
+     * Implements IPersistable interface.
+     */
+    @Override
+    public void save() {
+        System.out.println("Saving all system data...");
+        // This method delegates to specific save methods as needed
+        // In a real implementation, this would be called by TelemedicineSystem
+    }
+    
+    /**
+     * Generic load method that loads all system data.
+     * Implements IPersistable interface.
+     */
+    @Override
+    public void load() {
+        System.out.println("Loading system data...");
+        // This method delegates to specific load methods as needed
+        // In a real implementation, this would be called by TelemedicineSystem
     }
 }

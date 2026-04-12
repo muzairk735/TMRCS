@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * @author Telemedicine Team
  * @version 1.0
  */
-public class Doctor extends Person implements Serializable {
+public class Doctor extends Person implements Serializable, IAppointmentViewer {
     private static final long serialVersionUID = 1L;
     
     // Doctor-specific attributes
@@ -115,6 +115,18 @@ public class Doctor extends Person implements Serializable {
     // Method overloading
     public void viewAppointments() {
         viewAppointments("ALL");
+    }
+    
+    // Cancel appointment
+    public void cancelAppointment(String appointmentId) {
+        for (Appointment apt : appointments) {
+            if (apt.getAppointmentId().equals(appointmentId)) {
+                apt.cancelAppointment("Cancelled by doctor");
+                System.out.println("\n✓ Appointment cancelled successfully.");
+                return;
+            }
+        }
+        System.out.println("\n✗ Appointment not found.");
     }
     
     // Conduct consultation

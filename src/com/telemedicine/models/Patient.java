@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * @author Telemedicine Team
  * @version 1.0
  */
-public class Patient extends Person implements Serializable {
+public class Patient extends Person implements Serializable, IAppointmentViewer {
     private static final long serialVersionUID = 1L;
     
     // Patient-specific attributes
@@ -87,6 +87,29 @@ public class Patient extends Person implements Serializable {
         for (int i = 0; i < appointments.size(); i++) {
             System.out.println("\n" + (i + 1) + ".");
             appointments.get(i).displayAppointmentDetails();
+        }
+    }
+    
+    public void viewAppointments(String status) {
+        ArrayList<Appointment> filteredAppointments = new ArrayList<>();
+        for (Appointment apt : appointments) {
+            if (apt.getStatus().equalsIgnoreCase(status)) {
+                filteredAppointments.add(apt);
+            }
+        }
+        
+        if (filteredAppointments.isEmpty()) {
+            System.out.println("\n✗ No appointments found with status: " + status);
+            return;
+        }
+        
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║    APPOINTMENTS (" + status.toUpperCase() + ")       ║");
+        System.out.println("╚════════════════════════════════════════╝");
+        
+        for (int i = 0; i < filteredAppointments.size(); i++) {
+            System.out.println("\n" + (i + 1) + ".");
+            filteredAppointments.get(i).displayAppointmentDetails();
         }
     }
     

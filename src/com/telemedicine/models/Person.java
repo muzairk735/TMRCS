@@ -11,7 +11,7 @@ import java.time.LocalDate;
  * @version 1.0
  * @since 2026-04-06
  */
-public abstract class Person implements Serializable {
+public abstract class Person implements Serializable, IUser {
     private static final long serialVersionUID = 1L;
     
     // Attributes
