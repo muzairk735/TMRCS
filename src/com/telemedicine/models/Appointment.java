@@ -3,6 +3,7 @@ package com.telemedicine.models;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 /**
  * Represents a consultation appointment in the Telemedicine System.
@@ -24,6 +25,7 @@ public class Appointment implements Serializable {
     private String consultationMode; // VIDEO, PHONE, CHAT
     private LocalDateTime createdAt;
     private Prescription prescription;
+    private ArrayList<Message> consultationMessages;  // Consultation session messages/chat history
     
     // Constructor
     public Appointment(String appointmentId, Patient patient, Doctor doctor,
@@ -37,6 +39,7 @@ public class Appointment implements Serializable {
         this.consultationMode = consultationMode;
         this.status = "PENDING";
         this.createdAt = LocalDateTime.now();
+        this.consultationMessages = new ArrayList<>();
         this.prescription = null;
     }
     
@@ -152,5 +155,53 @@ public class Appointment implements Serializable {
     
     public LocalDateTime getCreatedAt() { 
         return createdAt; 
+    }
+    
+    /**
+     * Add a message to the consultation session.
+     * Supports chat history tracking for all consultation modes.
+     */
+    public void addConsultationMessage(Message message) {
+        if (message != null) {
+            this.consultationMessages.add(message);
+        }
+    }
+    
+    /**
+     * Get all messages in the consultation session.
+     */
+    public ArrayList<Message> getConsultationMessages() {
+        return consultationMessages;
+    }
+    
+    /**
+     * Display all consultation messages (chat history).
+     */
+    public void displayConsultationHistory() {
+        if (consultationMessages.isEmpty()) {
+            System.out.println("\n✗ No consultation messages recorded.");
+            return;
+        }
+        
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║      CONSULTATION SESSION HISTORY      ║");
+        System.out.println("╚════════════════════════════════════════╝");
+        
+        for (Message msg : consultationMessages) {
+            msg.displayMessage();
+        }
+    }
+    
+    /**
+     * Custom deserialization to handle old serialized objects without messages.
+     */
+    private void readObject(java.io.ObjectInputStream ois) 
+            throws java.io.IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        
+        // Initialize consultationMessages if it's null (from old serialized objects)
+        if (this.consultationMessages == null) {
+            this.consultationMessages = new ArrayList<>();
+        }
     }
 }
