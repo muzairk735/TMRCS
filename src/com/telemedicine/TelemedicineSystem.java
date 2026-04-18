@@ -141,8 +141,9 @@ public class TelemedicineSystem {
                 System.out.println("║  4. Book Appointment                   ║");
                 System.out.println("║  5. View My Appointments               ║");
                 System.out.println("║  6. Cancel Appointment                 ║");
-                System.out.println("║  7. View Medical History               ║");
-                System.out.println("║  8. Logout                             ║");
+                System.out.println("║  7. View My Prescriptions              ║");
+                System.out.println("║  8. View Medical History               ║");
+                System.out.println("║  9. Logout                             ║");
                 System.out.println("╚════════════════════════════════════════╝\n");
                 
                 int choice = getIntInput("Enter your choice: ");
@@ -170,10 +171,14 @@ public class TelemedicineSystem {
                         cancelAppointment(patient);
                         break;
                     case 7:
-                        patient.viewMedicalHistory();
+                        patient.viewPrescriptions();
                         pauseScreen();
                         break;
                     case 8:
+                        patient.viewMedicalHistory();
+                        pauseScreen();
+                        break;
+                    case 9:
                         currentUser = null;
                         currentUserType = null;
                         System.out.println("\n✓ Logged out successfully.");
@@ -498,7 +503,8 @@ public class TelemedicineSystem {
                 System.out.println("║  5. View Completed Appointments        ║");
                 System.out.println("║  6. Conduct Consultation               ║");
                 System.out.println("║  7. Issue Prescription                 ║");
-                System.out.println("║  8. Logout                             ║");
+                System.out.println("║  8. View My Issued Prescriptions       ║");
+                System.out.println("║  9. Logout                             ║");
                 System.out.println("╚════════════════════════════════════════╝\n");
                 
                 int choice = getIntInput("Enter your choice: ");
@@ -530,6 +536,10 @@ public class TelemedicineSystem {
                         issuePrescription(doctor);
                         break;
                     case 8:
+                        doctor.viewIssuedPrescriptions();
+                        pauseScreen();
+                        break;
+                    case 9:
                         currentUser = null;
                         currentUserType = null;
                         System.out.println("\n✓ Logged out successfully.");
@@ -713,12 +723,9 @@ public class TelemedicineSystem {
                 System.out.println("\n╔════════════════════════════════════════╗");
                 System.out.println("║       ADMIN DASHBOARD                  ║");
                 System.out.println("╠════════════════════════════════════════╣");
-                System.out.println("║  1. View Profile                       ║");
-                System.out.println("║  2. View All Appointments              ║");
-                System.out.println("║  3. Generate Report                    ║");
-                System.out.println("║  4. View All Doctors                   ║");
-                System.out.println("║  5. View All Patients                  ║");
-                System.out.println("║  6. Logout                             ║");
+                System.out.println("║  1. Remove Doctor                      ║");
+                System.out.println("║  7. Remove Patient                     ║");
+                System.out.println("║  8. Logout                             ║");
                 System.out.println("╚════════════════════════════════════════╝\n");
                 
                 int choice = getIntInput("Enter your choice: ");
@@ -745,6 +752,12 @@ public class TelemedicineSystem {
                         pauseScreen();
                         break;
                     case 6:
+                        removeDoctor(admin);
+                        break;
+                    case 7:
+                        removePatient(admin);
+                        break;
+                    case 8:
                         currentUser = null;
                         currentUserType = null;
                         System.out.println("\n✓ Logged out successfully.");
@@ -802,6 +815,112 @@ public class TelemedicineSystem {
             System.out.println("   Appointments: " + patient.getAppointments().size());
             System.out.println();
         }
+    }
+    
+    /**
+     * Remove a doctor from the system with cascade delete for prescriptions and appointments.
+     * Issue #2 & #7: Prescription tracking and cascade delete
+     */
+    private void removeDoctor(Admin admin) {
+        clearScreen();
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║      REMOVE DOCTOR                     ║");
+        System.out.println("╚════════════════════════════════════════╝\n");
+        
+        if (doctors.isEmpty()) {
+            System.out.println("✗ No doctors to remove.");
+            pauseScreen();
+            return;
+        }
+        
+        System.out.println("Select a doctor to remove:\n");
+        for (int i = 0; i < doctors.size(); i++) {
+            Doctor doc = doctors.get(i);
+            System.out.println((i + 1) + ". Dr. " + doc.getName() + " (ID: " + doc.getUserId() + ")");
+        }
+        
+        int choice = getIntInput("\nSelect doctor (1-" + doctors.size() + ") or 0 to cancel: ");
+        
+        if (choice == 0) {
+            System.out.println("Operation cancelled.");
+            pauseScreen();
+            return;
+        }
+        
+        if (choice < 1 || choice > doctors.size()) {
+            System.out.println("✗ Invalid selection.");
+            pauseScreen();
+            return;
+        }
+        
+        Doctor doctorToRemove = doctors.get(choice - 1);
+        String doctorId = doctorToRemove.getUserId();
+        
+        System.out.print("\nAre you sure you want to remove Dr. " + doctorToRemove.getName() + 
+                         "? (yes/no): ");
+        String confirmation = scanner.nextLine().trim().toLowerCase();
+        
+        if (confirmation.equals("yes")) {
+            admin.removeDoctor(doctors, doctorId);
+            System.out.println("✓ Doctor and all associated data removed successfully.");
+        } else {
+            System.out.println("Operation cancelled.");
+        }
+        
+        pauseScreen();
+    }
+    
+    /**
+     * Remove a patient from the system with cascade delete for prescriptions and appointments.
+     * Issue #2 & #7: Prescription tracking and cascade delete
+     */
+    private void removePatient(Admin admin) {
+        clearScreen();
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║      REMOVE PATIENT                    ║");
+        System.out.println("╚════════════════════════════════════════╝\n");
+        
+        if (patients.isEmpty()) {
+            System.out.println("✗ No patients to remove.");
+            pauseScreen();
+            return;
+        }
+        
+        System.out.println("Select a patient to remove:\n");
+        for (int i = 0; i < patients.size(); i++) {
+            Patient patient = patients.get(i);
+            System.out.println((i + 1) + ". " + patient.getName() + " (ID: " + patient.getUserId() + ")");
+        }
+        
+        int choice = getIntInput("\nSelect patient (1-" + patients.size() + ") or 0 to cancel: ");
+        
+        if (choice == 0) {
+            System.out.println("Operation cancelled.");
+            pauseScreen();
+            return;
+        }
+        
+        if (choice < 1 || choice > patients.size()) {
+            System.out.println("✗ Invalid selection.");
+            pauseScreen();
+            return;
+        }
+        
+        Patient patientToRemove = patients.get(choice - 1);
+        String patientId = patientToRemove.getUserId();
+        
+        System.out.print("\nAre you sure you want to remove " + patientToRemove.getName() + 
+                         "? (yes/no): ");
+        String confirmation = scanner.nextLine().trim().toLowerCase();
+        
+        if (confirmation.equals("yes")) {
+            admin.removePatient(patients, patientId);
+            System.out.println("✓ Patient and all associated data removed successfully.");
+        } else {
+            System.out.println("Operation cancelled.");
+        }
+        
+        pauseScreen();
     }
     
     // ==================== UTILITY METHODS ====================

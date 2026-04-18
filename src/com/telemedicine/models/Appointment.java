@@ -53,6 +53,19 @@ public class Appointment implements Serializable {
     public void cancelAppointment(String reason) {
         if (!status.equals("COMPLETED")) {
             this.status = "CANCELLED";
+            
+            // Issue #7: Cascade delete - Remove orphaned prescription if appointment cancelled before completion
+            // Only remove if prescription exists and appointment wasn't completed
+            if (this.prescription != null) {
+                if (patient != null) {
+                    patient.removePrescription(this.prescription);
+                }
+                if (doctor != null) {
+                    doctor.removeIssuedPrescription(this.prescription);
+                }
+                this.prescription = null;
+            }
+            
             System.out.println("✓ Appointment cancelled. Reason: " + reason);
         } else {
             System.out.println("✗ Cannot cancel completed appointment.");
@@ -124,6 +137,17 @@ public class Appointment implements Serializable {
     
     public void setPrescription(Prescription prescription) {
         this.prescription = prescription;
+        
+        // Issue #2: Ensure bidirectional consistency
+        // Add prescription to patient and doctor lists
+        if (prescription != null) {
+            if (patient != null) {
+                patient.addPrescription(prescription);
+            }
+            if (doctor != null) {
+                doctor.addIssuedPrescription(prescription);
+            }
+        }
     }
     
     public LocalDateTime getCreatedAt() { 

@@ -48,13 +48,57 @@ public class Admin extends Person implements Serializable {
         System.out.println("✓ Doctor " + doctor.getName() + " added successfully.");
     }
     
-    public void removeDoctor(ArrayList<Doctor> doctorList, String doctorId) {
-        boolean removed = doctorList.removeIf(d -> d.getUserId().equals(doctorId));
-        if (removed) {
-            System.out.println("✓ Doctor removed successfully.");
-        } else {
-            System.out.println("✗ Doctor not found.");
+    /**
+     * Remove a patient and cascade delete all their prescriptions.
+     * Issue #7: Cascade delete logic
+     */
+    public void removePatient(ArrayList<Patient> patientList, String patientId) {
+        Patient patientToRemove = patientList.stream()
+            .filter(p -> p.getUserId().equals(patientId))
+            .findFirst()
+            .orElse(null);
+        
+        if (patientToRemove == null) {
+            System.out.println("✗ Patient not found.");
+            return;
         }
+        
+        // Issue #7: Cascade delete - remove all prescriptions for this patient
+        patientToRemove.getPrescriptions().forEach(prescription -> {
+            Doctor doctor = prescription.getDoctor();
+            if (doctor != null) {
+                doctor.removeIssuedPrescription(prescription);
+            }
+        });
+        patientToRemove.getPrescriptions().clear();
+        
+        patientList.remove(patientToRemove);
+        System.out.println("✓ Patient removed successfully (including all prescriptions).");
+    }
+    
+    public void removeDoctor(ArrayList<Doctor> doctorList, String doctorId) {
+        Doctor doctorToRemove = doctorList.stream()
+            .filter(d -> d.getUserId().equals(doctorId))
+            .findFirst()
+            .orElse(null);
+        
+        if (doctorToRemove == null) {
+            System.out.println("✗ Doctor not found.");
+            return;
+        }
+        
+        // Issue #7: Cascade delete - remove all prescriptions issued by this doctor
+        // This prevents orphaned prescription data
+        doctorToRemove.getIssuedPrescriptions().forEach(prescription -> {
+            Patient patient = prescription.getPatient();
+            if (patient != null) {
+                patient.removePrescription(prescription);
+            }
+        });
+        doctorToRemove.getIssuedPrescriptions().clear();
+        
+        doctorList.remove(doctorToRemove);
+        System.out.println("✓ Doctor removed successfully (including all issued prescriptions).");
     }
     
     public void viewAllAppointments(ArrayList<Appointment> appointments) {

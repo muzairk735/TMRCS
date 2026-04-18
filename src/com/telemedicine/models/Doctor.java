@@ -1,6 +1,8 @@
 package com.telemedicine.models;
 
 import java.io.Serializable;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
     private double consultationFee;
     private ArrayList<TimeSlot> availability;
     private ArrayList<Appointment> appointments;
+    private ArrayList<Prescription> issuedPrescriptions;  // Issue #2: Direct prescription tracking
     private double rating;
     private int totalRatings;
     
@@ -37,6 +40,7 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         this.consultationFee = consultationFee;
         this.availability = new ArrayList<>();
         this.appointments = new ArrayList<>();
+        this.issuedPrescriptions = new ArrayList<>();
         this.rating = 0.0;
         this.totalRatings = 0;
     }
@@ -122,7 +126,6 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         for (Appointment apt : appointments) {
             if (apt.getAppointmentId().equals(appointmentId)) {
                 apt.cancelAppointment("Cancelled by doctor");
-                System.out.println("\n✓ Appointment cancelled successfully.");
                 return;
             }
         }
@@ -150,8 +153,60 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
             prescriptionId, patient, this, diagnosis, medicines, notes
         );
         
+        // Issue #2: Add prescription to both patient and doctor lists
+        if (patient != null) {
+            patient.addPrescription(prescription);
+        }
+        this.addIssuedPrescription(prescription);
+        
         System.out.println("✓ Prescription issued successfully.");
         prescription.displayPrescription();
+    }
+    
+    /**
+     * Add a prescription to the doctor's issued prescriptions list.
+     * Issue #2: Direct prescription tracking
+     */
+    public void addIssuedPrescription(Prescription prescription) {
+        if (prescription != null) {
+            // Initialize if null (safety check for deserialized objects)
+            if (this.issuedPrescriptions == null) {
+                this.issuedPrescriptions = new ArrayList<>();
+            }
+            if (!this.issuedPrescriptions.contains(prescription)) {
+                this.issuedPrescriptions.add(prescription);
+            }
+        }
+    }
+    
+    /**
+     * Remove a prescription from the doctor's issued prescriptions list.
+     * Issue #2: Direct prescription tracking
+     */
+    public void removeIssuedPrescription(Prescription prescription) {
+        if (prescription != null && this.issuedPrescriptions != null) {
+            this.issuedPrescriptions.remove(prescription);
+        }
+    }
+    
+    /**
+     * View all prescriptions issued by this doctor.
+     * Issue #2: Direct prescription tracking
+     */
+    public void viewIssuedPrescriptions() {
+        if (this.issuedPrescriptions == null || this.issuedPrescriptions.isEmpty()) {
+            System.out.println("\n✗ No prescriptions issued.");
+            return;
+        }
+        
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║      PRESCRIBED BY YOU                 ║");
+        System.out.println("╚════════════════════════════════════════╝");
+        
+        for (int i = 0; i < issuedPrescriptions.size(); i++) {
+            System.out.println("\n" + (i + 1) + ".");
+            issuedPrescriptions.get(i).displayPrescription();
+        }
     }
     
     public void addAppointment(Appointment appointment) {
@@ -204,5 +259,22 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
     
     public ArrayList<TimeSlot> getAvailability() { 
         return availability; 
+    }
+    
+    public ArrayList<Prescription> getIssuedPrescriptions() { 
+        return issuedPrescriptions; 
+    }
+    
+    /**
+     * Custom deserialization to handle old serialized objects.
+     * Issue #2: Ensures issuedPrescriptions list is initialized for deserialized objects.
+     */
+    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        
+        // Initialize issuedPrescriptions if it's null (from old serialized objects)
+        if (this.issuedPrescriptions == null) {
+            this.issuedPrescriptions = new ArrayList<>();
+        }
     }
 }

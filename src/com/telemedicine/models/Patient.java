@@ -1,6 +1,8 @@
 package com.telemedicine.models;
 
 import java.io.Serializable;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -21,6 +23,7 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
     private String address;
     private ArrayList<MedicalRecord> medicalHistory;
     private ArrayList<Appointment> appointments;
+    private ArrayList<Prescription> prescriptions;  // Issue #2: Direct prescription tracking
     
     // Constructor
     public Patient(String userId, String name, String email, 
@@ -33,6 +36,7 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         this.address = address;
         this.medicalHistory = new ArrayList<>();
         this.appointments = new ArrayList<>();
+        this.prescriptions = new ArrayList<>();
     }
     
     // Override abstract method from Person
@@ -133,7 +137,6 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         for (Appointment apt : appointments) {
             if (apt.getAppointmentId().equals(appointmentId)) {
                 apt.cancelAppointment("Cancelled by patient");
-                System.out.println("\n✓ Appointment cancelled successfully.");
                 return;
             }
         }
@@ -142,6 +145,52 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
     
     public void addMedicalRecord(MedicalRecord record) {
         this.medicalHistory.add(record);
+    }
+    
+    /**
+     * Add a prescription to the patient's prescription list.
+     * Issue #2: Direct prescription tracking
+     */
+    public void addPrescription(Prescription prescription) {
+        if (prescription != null) {
+            // Initialize if null (safety check for deserialized objects)
+            if (this.prescriptions == null) {
+                this.prescriptions = new ArrayList<>();
+            }
+            if (!this.prescriptions.contains(prescription)) {
+                this.prescriptions.add(prescription);
+            }
+        }
+    }
+    
+    /**
+     * Remove a prescription from the patient's prescription list.
+     * Issue #2: Direct prescription tracking
+     */
+    public void removePrescription(Prescription prescription) {
+        if (prescription != null && this.prescriptions != null) {
+            this.prescriptions.remove(prescription);
+        }
+    }
+    
+    /**
+     * View all prescriptions for this patient.
+     * Issue #2: Direct prescription tracking
+     */
+    public void viewPrescriptions() {
+        if (this.prescriptions == null || this.prescriptions.isEmpty()) {
+            System.out.println("\n✗ No prescriptions found.");
+            return;
+        }
+        
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║         YOUR PRESCRIPTIONS             ║");
+        System.out.println("╚════════════════════════════════════════╝");
+        
+        for (int i = 0; i < prescriptions.size(); i++) {
+            System.out.println("\n" + (i + 1) + ".");
+            prescriptions.get(i).displayPrescription();
+        }
     }
     
     // Getters and Setters
@@ -175,5 +224,22 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
     
     public ArrayList<MedicalRecord> getMedicalHistory() { 
         return medicalHistory; 
+    }
+    
+    public ArrayList<Prescription> getPrescriptions() { 
+        return prescriptions; 
+    }
+    
+    /**
+     * Custom deserialization to handle old serialized objects.
+     * Issue #2: Ensures prescriptions list is initialized for deserialized objects.
+     */
+    private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
+        ois.defaultReadObject();
+        
+        // Initialize prescriptions if it's null (from old serialized objects)
+        if (this.prescriptions == null) {
+            this.prescriptions = new ArrayList<>();
+        }
     }
 }
