@@ -68,6 +68,9 @@ public class TelemedicineSystem {
                         registerPatient();
                         break;
                     case 5:
+                        resetSampleData();
+                        break;
+                    case 6:
                         saveAllData();
                         System.out.println("\n✓ Thank you for using Telemedicine System!");
                         System.exit(0);
@@ -92,7 +95,8 @@ public class TelemedicineSystem {
         System.out.println("║  2. Doctor Login                       ║");
         System.out.println("║  3. Admin Login                        ║");
         System.out.println("║  4. New Patient Registration           ║");
-        System.out.println("║  5. Exit                               ║");
+        System.out.println("║  5. Reset Sample Data                  ║");
+        System.out.println("║  6. Exit                               ║");
         System.out.println("╚════════════════════════════════════════╝\n");
     }
     
@@ -142,8 +146,9 @@ public class TelemedicineSystem {
                 System.out.println("║  5. View My Appointments               ║");
                 System.out.println("║  6. Cancel Appointment                 ║");
                 System.out.println("║  7. View My Prescriptions              ║");
-                System.out.println("║  8. View Medical History               ║");
-                System.out.println("║  9. Logout                             ║");
+                System.out.println("║  8. View Consultation Chat             ║");
+                System.out.println("║  9. View Medical History               ║");
+                System.out.println("║  10. Logout                            ║");
                 System.out.println("╚════════════════════════════════════════╝\n");
                 
                 int choice = getIntInput("Enter your choice: ");
@@ -175,10 +180,13 @@ public class TelemedicineSystem {
                         pauseScreen();
                         break;
                     case 8:
+                        viewConsultationChat(patient);
+                        break;
+                    case 9:
                         patient.viewMedicalHistory();
                         pauseScreen();
                         break;
-                    case 9:
+                    case 10:
                         currentUser = null;
                         currentUserType = null;
                         System.out.println("\n✓ Logged out successfully.");
@@ -504,7 +512,8 @@ public class TelemedicineSystem {
                 System.out.println("║  6. Conduct Consultation               ║");
                 System.out.println("║  7. Issue Prescription                 ║");
                 System.out.println("║  8. View My Issued Prescriptions       ║");
-                System.out.println("║  9. Logout                             ║");
+                System.out.println("║  9. View Patient Responses             ║");
+                System.out.println("║  10. Logout                            ║");
                 System.out.println("╚════════════════════════════════════════╝\n");
                 
                 int choice = getIntInput("Enter your choice: ");
@@ -540,6 +549,9 @@ public class TelemedicineSystem {
                         pauseScreen();
                         break;
                     case 9:
+                        viewPatientResponses(doctor);
+                        break;
+                    case 10:
                         currentUser = null;
                         currentUserType = null;
                         System.out.println("\n✓ Logged out successfully.");
@@ -629,6 +641,92 @@ public class TelemedicineSystem {
     }
     
     /**
+     * View consultation chat for a patient and allow them to reply to doctor's messages.
+     */
+    private void viewConsultationChat(Patient patient) {
+        clearScreen();
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║   VIEW CONSULTATION CHAT               ║");
+        System.out.println("╚════════════════════════════════════════╝\n");
+        
+        // Find appointments with messages
+        ArrayList<Appointment> chatAppointments = new ArrayList<>();
+        for (Appointment apt : patient.getAppointments()) {
+            if (!apt.getConsultationMessages().isEmpty()) {
+                chatAppointments.add(apt);
+            }
+        }
+        
+        if (chatAppointments.isEmpty()) {
+            System.out.println("✗ You have no consultation chats yet.");
+            pauseScreen();
+            return;
+        }
+        
+        System.out.println("Your Consultation Chats:\n");
+        for (int i = 0; i < chatAppointments.size(); i++) {
+            Appointment apt = chatAppointments.get(i);
+            System.out.println((i + 1) + ". Dr. " + apt.getDoctor().getName() +
+                             " | " + apt.getConsultationMode() + 
+                             " | " + apt.getSymptoms().substring(0, Math.min(25, apt.getSymptoms().length())) + "...");
+        }
+        
+        int choice = getIntInput("\nEnter chat number (or 0 to go back): ");
+        if (choice < 1 || choice > chatAppointments.size()) {
+            return;
+        }
+        
+        Appointment selectedAppointment = chatAppointments.get(choice - 1);
+        respondToChat(patient, selectedAppointment);
+    }
+    
+    /**
+     * Allow patient to view and respond to doctor's messages in a chat.
+     */
+    private void respondToChat(Patient patient, Appointment appointment) {
+        clearScreen();
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║      CONSULTATION CHAT                 ║");
+        System.out.println("╠════════════════════════════════════════╣");
+        System.out.println("║ With: Dr. " + String.format("%-27s", appointment.getDoctor().getName()) + "║");
+        System.out.println("║ Mode: " + String.format("%-32s", appointment.getConsultationMode()) + "║");
+        System.out.println("╚════════════════════════════════════════╝\n");
+        
+        // Display all messages in the conversation
+        System.out.println("--- Conversation History ---\n");
+        for (Message msg : appointment.getConsultationMessages()) {
+            msg.displayMessage();
+        }
+        
+        System.out.println("\n--- Your Reply ---");
+        System.out.println("Type your messages to respond (type 'done' when finished)\n");
+        
+        boolean respondingToChat = true;
+        
+        while (respondingToChat) {
+            System.out.print(patient.getName() + ": ");
+            String message = scanner.nextLine().trim();
+            
+            if (message.equalsIgnoreCase("done")) {
+                respondingToChat = false;
+                break;
+            }
+            
+            if (message.isEmpty()) {
+                continue;
+            }
+            
+            // Save patient's message to the chat
+            Message patientMsg = new Message(patient.getName(), "PATIENT", message, appointment.getConsultationMode());
+            appointment.addConsultationMessage(patientMsg);
+            System.out.println("✓ Message sent\n");
+        }
+        
+        System.out.println("\n✓ Your replies have been saved. Doctor will see them when they log in.");
+        pauseScreen();
+    }
+    
+    /**
      * Run an interactive consultation session based on the consultation mode.
      * Supports VIDEO, PHONE, and CHAT with message exchange.
      */
@@ -665,192 +763,228 @@ public class TelemedicineSystem {
                 runChatSession(appointment, doctor, patient);
         }
         
-        // Complete appointment
-        appointment.completeAppointment();
-        System.out.println("\n✓ Consultation completed successfully.");
+        System.out.println("\n✓ Messages sent. Patient will see them when they log in.");
         pauseScreen();
     }
     
     /**
-     * Run an interactive CHAT mode consultation with two-way message exchange.
-     * Both doctor and patient can send messages during the consultation.
+     * Run an asynchronous CHAT mode consultation.
+     * Doctor sends one or more messages that are saved.
+     * Patient can reply when they log in.
      */
     private void runChatSession(Appointment appointment, Doctor doctor, Patient patient) {
         System.out.println("\n═══════════════════════════════════════════");
-        System.out.println("        CHAT CONSULTATION SESSION");
+        System.out.println("        APPOINTMENT MESSAGING (CHAT)");
         System.out.println("═══════════════════════════════════════════\n");
-        System.out.println("Doctor: Type your messages (or 'end' to finish consultation)\n");
+        System.out.println("Send messages to " + patient.getName() + " (type 'done' when finished)\n");
         
-        boolean consultationActive = true;
-        
-        while (consultationActive) {
-            // Doctor sends message
-            System.out.print("Dr. " + doctor.getName() + ": ");
-            String doctorMessage = scanner.nextLine().trim();
-            
-            if (doctorMessage.equalsIgnoreCase("end")) {
-                consultationActive = false;
-                break;
+        // Display previous messages if any
+        if (!appointment.getConsultationMessages().isEmpty()) {
+            System.out.println("--- Previous Messages in Conversation ---");
+            for (Message msg : appointment.getConsultationMessages()) {
+                msg.displayMessage();
             }
-            
-            if (doctorMessage.isEmpty()) {
-                continue;
-            }
-            
-            // Store doctor's message
-            Message docMsg = new Message(doctor.getName(), "DOCTOR", doctorMessage, "CHAT");
-            appointment.addConsultationMessage(docMsg);
-            
-            // Patient responds
-            System.out.print(patient.getName() + ": ");
-            String patientMessage = scanner.nextLine().trim();
-            
-            if (patientMessage.equalsIgnoreCase("end")) {
-                System.out.println("\nDr. " + doctor.getName() + ": Thank you for the consultation. Take care!");
-                Message closingMsg = new Message(doctor.getName(), "DOCTOR", 
-                    "Thank you for the consultation. Take care!", "CHAT");
-                appointment.addConsultationMessage(closingMsg);
-                consultationActive = false;
-                break;
-            }
-            
-            if (patientMessage.isEmpty()) {
-                continue;
-            }
-            
-            // Store patient's message
-            Message patMsg = new Message(patient.getName(), "PATIENT", patientMessage, "CHAT");
-            appointment.addConsultationMessage(patMsg);
-            
-            System.out.println();
+            System.out.println("--- New Messages ---\n");
         }
         
-        System.out.println("\n✓ Consultation chat session ended.");
+        boolean sendingMessages = true;
+        
+        while (sendingMessages) {
+            System.out.print("Dr. " + doctor.getName() + ": ");
+            String message = scanner.nextLine().trim();
+            
+            if (message.equalsIgnoreCase("done")) {
+                sendingMessages = false;
+                break;
+            }
+            
+            if (message.isEmpty()) {
+                continue;
+            }
+            
+            // Save message to appointment chat
+            Message doctorMsg = new Message(doctor.getName(), "DOCTOR", message, "CHAT");
+            appointment.addConsultationMessage(doctorMsg);
+            System.out.println("✓ Message saved\n");
+        }
     }
     
     /**
-     * Run a VIDEO mode consultation with real message exchange.
+     * Run an asynchronous VIDEO mode consultation.
+     * Doctor sends one or more messages that are saved.
+     * Patient can reply when they log in.
      */
     private void runVideoConsultation(Appointment appointment, Doctor doctor, Patient patient) {
         System.out.println("\n═══════════════════════════════════════════");
-        System.out.println("        VIDEO CONSULTATION SESSION");
+        System.out.println("        APPOINTMENT MESSAGING (VIDEO)");
         System.out.println("═══════════════════════════════════════════\n");
+        System.out.println("Send messages to " + patient.getName() + " (type 'done' when finished)\n");
         
-        System.out.println("📹 Establishing video connection...");
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
-        System.out.println("✓ Connected to Dr. " + doctor.getName());
-        System.out.println("\n[Dr. " + doctor.getName() + " is now visible on screen]\n");
-        System.out.println("Doctor: Type 'end' to finish)\n");
-        
-        boolean consultationActive = true;
-        Message initialMsg = new Message(doctor.getName(), "DOCTOR", 
-            "[Video consultation started - Dr. " + doctor.getName() + " connected]", "VIDEO");
-        appointment.addConsultationMessage(initialMsg);
-        
-        while (consultationActive) {
-            // Doctor sends message
-            System.out.print("Dr. " + doctor.getName() + ": ");
-            String doctorMessage = scanner.nextLine().trim();
-            
-            if (doctorMessage.equalsIgnoreCase("end")) {
-                consultationActive = false;
-                break;
+        // Display previous messages if any
+        if (!appointment.getConsultationMessages().isEmpty()) {
+            System.out.println("--- Previous Messages in Conversation ---");
+            for (Message msg : appointment.getConsultationMessages()) {
+                msg.displayMessage();
             }
-            
-            if (doctorMessage.isEmpty()) {
-                continue;
-            }
-            
-            // Store doctor's message
-            Message docMsg = new Message(doctor.getName(), "DOCTOR", doctorMessage, "VIDEO");
-            appointment.addConsultationMessage(docMsg);
-            
-            // Patient responds
-            System.out.print(patient.getName() + ": ");
-            String patientMessage = scanner.nextLine().trim();
-            
-            if (patientMessage.equalsIgnoreCase("end")) {
-                Message closingMsg = new Message(doctor.getName(), "DOCTOR", 
-                    "[Ending video consultation - Thank you for your time]", "VIDEO");
-                appointment.addConsultationMessage(closingMsg);
-                consultationActive = false;
-                break;
-            }
-            
-            if (patientMessage.isEmpty()) {
-                continue;
-            }
-            
-            // Store patient's message
-            Message patMsg = new Message(patient.getName(), "PATIENT", patientMessage, "VIDEO");
-            appointment.addConsultationMessage(patMsg);
-            
-            System.out.println();
+            System.out.println("--- New Messages ---\n");
         }
         
-        System.out.println("\n📹 Video consultation ended.");
+        // Log initial video session marker
+        Message startMsg = new Message(doctor.getName(), "DOCTOR", 
+            "[Doctor initiated video consultation session]", "VIDEO");
+        appointment.addConsultationMessage(startMsg);
+        System.out.println("✓ Video consultation session started\n");
+        
+        boolean sendingMessages = true;
+        
+        while (sendingMessages) {
+            System.out.print("Dr. " + doctor.getName() + ": ");
+            String message = scanner.nextLine().trim();
+            
+            if (message.equalsIgnoreCase("done")) {
+                Message endMsg = new Message(doctor.getName(), "DOCTOR", 
+                    "[Doctor ended video consultation session]", "VIDEO");
+                appointment.addConsultationMessage(endMsg);
+                sendingMessages = false;
+                break;
+            }
+            
+            if (message.isEmpty()) {
+                continue;
+            }
+            
+            // Save message to appointment chat
+            Message doctorMsg = new Message(doctor.getName(), "DOCTOR", message, "VIDEO");
+            appointment.addConsultationMessage(doctorMsg);
+            System.out.println("✓ Message saved\n");
+        }
     }
     
     /**
-     * Run a PHONE mode consultation with real message exchange.
+     * Run an asynchronous PHONE mode consultation.
+     * Doctor sends one or more messages that are saved.
+     * Patient can reply when they log in.
      */
     private void runPhoneConsultation(Appointment appointment, Doctor doctor, Patient patient) {
         System.out.println("\n═══════════════════════════════════════════");
-        System.out.println("        PHONE CONSULTATION SESSION");
+        System.out.println("        APPOINTMENT MESSAGING (PHONE)");
         System.out.println("═══════════════════════════════════════════\n");
+        System.out.println("Send messages to " + patient.getName() + " (type 'done' when finished)\n");
         
-        System.out.println("📞 Calling Dr. " + doctor.getName() + "...");
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
-        System.out.println("✓ Connected via phone call\n");
-        System.out.println("Type 'end' to finish)\n");
-        
-        boolean consultationActive = true;
-        Message initialMsg = new Message(doctor.getName(), "DOCTOR", 
-            "[Phone call connected - Dr. " + doctor.getName() + "]", "PHONE");
-        appointment.addConsultationMessage(initialMsg);
-        
-        while (consultationActive) {
-            // Doctor speaks
-            System.out.print("Dr. " + doctor.getName() + ": ");
-            String doctorMessage = scanner.nextLine().trim();
-            
-            if (doctorMessage.equalsIgnoreCase("end")) {
-                consultationActive = false;
-                break;
+        // Display previous messages if any
+        if (!appointment.getConsultationMessages().isEmpty()) {
+            System.out.println("--- Previous Messages in Conversation ---");
+            for (Message msg : appointment.getConsultationMessages()) {
+                msg.displayMessage();
             }
-            
-            if (doctorMessage.isEmpty()) {
-                continue;
-            }
-            
-            // Store doctor's message
-            Message docMsg = new Message(doctor.getName(), "DOCTOR", doctorMessage, "PHONE");
-            appointment.addConsultationMessage(docMsg);
-            
-            // Patient responds
-            System.out.print(patient.getName() + ": ");
-            String patientMessage = scanner.nextLine().trim();
-            
-            if (patientMessage.equalsIgnoreCase("end")) {
-                Message closingMsg = new Message(doctor.getName(), "DOCTOR", 
-                    "[Call ending - Follow up with prescription. Take care!]", "PHONE");
-                appointment.addConsultationMessage(closingMsg);
-                consultationActive = false;
-                break;
-            }
-            
-            if (patientMessage.isEmpty()) {
-                continue;
-            }
-            
-            // Store patient's message
-            Message patMsg = new Message(patient.getName(), "PATIENT", patientMessage, "PHONE");
-            appointment.addConsultationMessage(patMsg);
-            
-            System.out.println();
+            System.out.println("--- New Messages ---\n");
         }
         
-        System.out.println("\n📞 Call ended.");
+        // Log initial phone session marker
+        Message startMsg = new Message(doctor.getName(), "DOCTOR", 
+            "[Doctor initiated phone consultation]", "PHONE");
+        appointment.addConsultationMessage(startMsg);
+        System.out.println("✓ Phone consultation session started\n");
+        
+        boolean sendingMessages = true;
+        
+        while (sendingMessages) {
+            System.out.print("Dr. " + doctor.getName() + ": ");
+            String message = scanner.nextLine().trim();
+            
+            if (message.equalsIgnoreCase("done")) {
+                Message endMsg = new Message(doctor.getName(), "DOCTOR", 
+                    "[Doctor ended phone consultation]", "PHONE");
+                appointment.addConsultationMessage(endMsg);
+                sendingMessages = false;
+                break;
+            }
+            
+            if (message.isEmpty()) {
+                continue;
+            }
+            
+            // Save message to appointment chat
+            Message doctorMsg = new Message(doctor.getName(), "DOCTOR", message, "PHONE");
+            appointment.addConsultationMessage(doctorMsg);
+            System.out.println("✓ Message saved\n");
+        }
+    }
+    
+    /**
+     * Allow doctor to view patient responses to sent messages.
+     */
+    private void viewPatientResponses(Doctor doctor) {
+        clearScreen();
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║   VIEW PATIENT RESPONSES               ║");
+        System.out.println("╚════════════════════════════════════════╝\n");
+        
+        // Find appointments with messages where patient has responded
+        ArrayList<Appointment> respondedAppointments = new ArrayList<>();
+        for (Appointment apt : doctor.getAppointments()) {
+            if (!apt.getConsultationMessages().isEmpty()) {
+                // Check if there are any patient messages
+                boolean hasPatientMessage = false;
+                for (Message msg : apt.getConsultationMessages()) {
+                    if (msg.getSenderType().equals("PATIENT")) {
+                        hasPatientMessage = true;
+                        break;
+                    }
+                }
+                if (hasPatientMessage) {
+                    respondedAppointments.add(apt);
+                }
+            }
+        }
+        
+        if (respondedAppointments.isEmpty()) {
+            System.out.println("✗ No patients have responded to your messages yet.");
+            pauseScreen();
+            return;
+        }
+        
+        System.out.println("Patient Responses:\n");
+        for (int i = 0; i < respondedAppointments.size(); i++) {
+            Appointment apt = respondedAppointments.get(i);
+            int patientMessageCount = 0;
+            for (Message msg : apt.getConsultationMessages()) {
+                if (msg.getSenderType().equals("PATIENT")) {
+                    patientMessageCount++;
+                }
+            }
+            System.out.println((i + 1) + ". " + apt.getPatient().getName() +
+                             " | " + apt.getConsultationMode() + 
+                             " | " + patientMessageCount + " response(s)");
+        }
+        
+        int choice = getIntInput("\nEnter appointment number (or 0 to go back): ");
+        if (choice < 1 || choice > respondedAppointments.size()) {
+            return;
+        }
+        
+        Appointment selectedAppointment = respondedAppointments.get(choice - 1);
+        displayConsultationChat(doctor, selectedAppointment);
+    }
+    
+    /**
+     * Display the full consultation chat for a doctor to review.
+     */
+    private void displayConsultationChat(Doctor doctor, Appointment appointment) {
+        clearScreen();
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║      CONSULTATION CHAT HISTORY         ║");
+        System.out.println("╠════════════════════════════════════════╣");
+        System.out.println("║ Patient: " + String.format("%-29s", appointment.getPatient().getName()) + "║");
+        System.out.println("║ Mode: " + String.format("%-32s", appointment.getConsultationMode()) + "║");
+        System.out.println("╚════════════════════════════════════════╝\n");
+        
+        // Display all messages in the conversation
+        for (Message msg : appointment.getConsultationMessages()) {
+            msg.displayMessage();
+        }
+        
+        pauseScreen();
     }
     
     private void issuePrescription(Doctor doctor) {
@@ -1203,6 +1337,36 @@ public class TelemedicineSystem {
         doctors = fileHandler.loadDoctors();
         appointments = fileHandler.loadAppointments();
         admins = fileHandler.loadAdmins();
+    }
+    
+    private void resetSampleData() {
+        clearScreen();
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║      RESET SAMPLE DATA                 ║");
+        System.out.println("╚════════════════════════════════════════╝\n");
+        
+        System.out.println("This will clear all data and load fresh sample doctors with availability.\n");
+        System.out.print("Are you sure? (yes/no): ");
+        String confirmation = scanner.nextLine().trim().toLowerCase();
+        
+        if (confirmation.equals("yes")) {
+            doctors.clear();
+            patients.clear();
+            appointments.clear();
+            admins.clear();
+            
+            addSampleData();
+            saveAllData();
+            
+            System.out.println("\n✓ Sample data reloaded successfully!");
+            System.out.println("  - 3 sample doctors (with 7-day availability each)");
+            System.out.println("  - 1 sample admin");
+            System.out.println("  - 1 sample patient");
+            pauseScreen();
+        } else {
+            System.out.println("\n✗ Cancelled.");
+            pauseScreen();
+        }
     }
     
     // ==================== SAMPLE DATA ====================
