@@ -78,7 +78,7 @@ public class TelemedicineSystem {
         System.out.println("║  2. Doctor Login                       ║");
         System.out.println("║  3. Admin Login                        ║");
         System.out.println("║  4. New Patient Registration           ║");
-        System.out.println("║  5. Reset Sample Data                  ║");
+        System.out.println("║  5. Reset and View Sample Data         ║");
         System.out.println("║  6. Exit                               ║");
         System.out.println("╚════════════════════════════════════════╝\n");
     }
@@ -872,6 +872,32 @@ public class TelemedicineSystem {
         } else {
             System.out.println("\n✗ Cancelled.");
         }
+
+        System.out.println("\n========== SAMPLE DATA LOADED ==========\n");
+
+        System.out.println("---- Doctors ----");
+        System.out.println("ID: D001 | Name: Fatima Khan | Email: fatima@hospital.com | Phone: 0301-1111111");
+        System.out.println("Specialization: Cardiologist | PMC: PMC-12345 | Experience: 10 years | Fee: Rs. 2000");
+        System.out.println("Availability: Next 7 days | 09:00 - 17:00\n");
+
+        System.out.println("ID: D002 | Name: Ali Raza | Email: ali@hospital.com | Phone: 0302-2222222");
+        System.out.println("Specialization: Dermatologist | PMC: PMC-12346 | Experience: 8 years | Fee: Rs. 1500");
+        System.out.println("Availability: Next 7 days | 10:00 - 16:00\n");
+
+        System.out.println("ID: D003 | Name: Sara Ahmed | Email: sara@hospital.com | Phone: 0303-3333333");
+        System.out.println("Specialization: Pediatrician | PMC: PMC-12347 | Experience: 12 years | Fee: Rs. 1800");
+        System.out.println("Availability: Next 7 days | 08:00 - 14:00\n");
+
+        System.out.println("---- Admin ----");
+        System.out.println("ID: A001 | Name: Admin User | Email: admin@system.com | Phone: 0300-0000000");
+        System.out.println("Role: super_admin\n");
+
+        System.out.println("---- Patient ----");
+        System.out.println("ID: P001 | Name: Ahmed Ali | Email: ahmed@email.com | Phone: 0300-1234567");
+        System.out.println("Age: 28 | Gender: Male | Blood Group: B+ | Address: Rawalpindi\n");
+
+        System.out.println("========================================");
+
         pauseScreen();
     }
 
