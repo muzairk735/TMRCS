@@ -497,11 +497,11 @@ public class TelemedicineSystem {
                 System.out.println("║  3. View All Appointments              ║");
                 System.out.println("║  4. View Pending Appointments          ║");
                 System.out.println("║  5. View Completed Appointments        ║");
-                System.out.println("║  6. Conduct Consultation               ║");
+                System.out.println("║  6. Conduct Consultation OR open chat  ║");
                 System.out.println("║  7. Issue Prescription                 ║");
                 System.out.println("║  8. View My Issued Prescriptions       ║");
-                System.out.println("║  9. View Patient Responses             ║");
-                System.out.println("║  10. Logout                            ║");
+                //System.out.println("║  9. View Patient Responses             ║");
+                System.out.println("║  9. Logout                            ║");
                 System.out.println("╚════════════════════════════════════════╝\n");
                 
                 int choice = getIntInput("Enter your choice: ");
@@ -536,10 +536,10 @@ public class TelemedicineSystem {
                         doctor.viewIssuedPrescriptions();
                         pauseScreen();
                         break;
+                    // case 9:
+                    //     viewPatientResponses(doctor);
+                    //     break;
                     case 9:
-                        viewPatientResponses(doctor);
-                        break;
-                    case 10:
                         currentUser = null;
                         currentUserType = null;
                         System.out.println("\n✓ Logged out successfully.");
@@ -874,58 +874,58 @@ public class TelemedicineSystem {
         }
     }
     
-    private void viewPatientResponses(Doctor doctor) {
-        clearScreen();
-        System.out.println("\n╔════════════════════════════════════════╗");
-        System.out.println("║   VIEW PATIENT RESPONSES               ║");
-        System.out.println("╚════════════════════════════════════════╝\n");
+    // private void viewPatientResponses(Doctor doctor) {
+    //     clearScreen();
+    //     System.out.println("\n╔════════════════════════════════════════╗");
+    //     System.out.println("║   VIEW PATIENT RESPONSES               ║");
+    //     System.out.println("╚════════════════════════════════════════╝\n");
         
-        // Find appointments with messages where patient has responded
-        ArrayList<Appointment> respondedAppointments = new ArrayList<>();
-        for (Appointment apt : doctor.getAppointments()) {
-            if (!apt.getConsultationMessages().isEmpty()) {
-                // Check if there are any patient messages
-                boolean hasPatientMessage = false;
-                for (Message msg : apt.getConsultationMessages()) {
-                    if (msg.getSenderType().equals("PATIENT")) {
-                        hasPatientMessage = true;
-                        break;
-                    }
-                }
-                if (hasPatientMessage) {
-                    respondedAppointments.add(apt);
-                }
-            }
-        }
+    //     // Find appointments with messages where patient has responded
+    //     ArrayList<Appointment> respondedAppointments = new ArrayList<>();
+    //     for (Appointment apt : doctor.getAppointments()) {
+    //         if (!apt.getConsultationMessages().isEmpty()) {
+    //             // Check if there are any patient messages
+    //             boolean hasPatientMessage = false;
+    //             for (Message msg : apt.getConsultationMessages()) {
+    //                 if (msg.getSenderType().equals("PATIENT")) {
+    //                     hasPatientMessage = true;
+    //                     break;
+    //                 }
+    //             }
+    //             if (hasPatientMessage) {
+    //                 respondedAppointments.add(apt);
+    //             }
+    //         }
+    //     }
         
-        if (respondedAppointments.isEmpty()) {
-            System.out.println("✗ No patients have responded to your messages yet.");
-            pauseScreen();
-            return;
-        }
+    //     if (respondedAppointments.isEmpty()) {
+    //         System.out.println("✗ No patients have responded to your messages yet.");
+    //         pauseScreen();
+    //         return;
+    //     }
         
-        System.out.println("Patient Responses:\n");
-        for (int i = 0; i < respondedAppointments.size(); i++) {
-            Appointment apt = respondedAppointments.get(i);
-            int patientMessageCount = 0;
-            for (Message msg : apt.getConsultationMessages()) {
-                if (msg.getSenderType().equals("PATIENT")) {
-                    patientMessageCount++;
-                }
-            }
-            System.out.println((i + 1) + ". " + apt.getPatient().getName() +
-                             " | " + apt.getConsultationMode() + 
-                             " | " + patientMessageCount + " response(s)");
-        }
+    //     System.out.println("Patient Responses:\n");
+    //     for (int i = 0; i < respondedAppointments.size(); i++) {
+    //         Appointment apt = respondedAppointments.get(i);
+    //         int patientMessageCount = 0;
+    //         for (Message msg : apt.getConsultationMessages()) {
+    //             if (msg.getSenderType().equals("PATIENT")) {
+    //                 patientMessageCount++;
+    //             }
+    //         }
+    //         System.out.println((i + 1) + ". " + apt.getPatient().getName() +
+    //                          " | " + apt.getConsultationMode() + 
+    //                          " | " + patientMessageCount + " response(s)");
+    //     }
         
-        int choice = getIntInput("\nEnter appointment number (or 0 to go back): ");
-        if (choice < 1 || choice > respondedAppointments.size()) {
-            return;
-        }
+    //     int choice = getIntInput("\nEnter appointment number (or 0 to go back): ");
+    //     if (choice < 1 || choice > respondedAppointments.size()) {
+    //         return;
+    //     }
         
-        Appointment selectedAppointment = respondedAppointments.get(choice - 1);
-        displayConsultationChat(doctor, selectedAppointment);
-    }
+    //     Appointment selectedAppointment = respondedAppointments.get(choice - 1);
+    //     displayConsultationChat(doctor, selectedAppointment);
+    // }
     
     private void displayConsultationChat(Doctor doctor, Appointment appointment) {
         clearScreen();
