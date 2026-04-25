@@ -5,10 +5,14 @@ import java.io.ObjectInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
- 
+
 public class Patient extends Person implements Serializable, AppointmentViewerInterface {
     private static final long serialVersionUID = 1L;
-    
+
+    private static final String[] VALID_BLOOD_GROUPS =
+        {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
+
+    // Patient-specific attributes
     private int age;
     private String gender;
     private String bloodGroup;
@@ -16,21 +20,55 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
     private ArrayList<MedicalRecord> medicalHistory;
     private ArrayList<Appointment> appointments;
     private ArrayList<Prescription> prescriptions;
-    
-    
-    public Patient(String userId, String name, String email, 
+
+    // Validators
+    private static void validateAge(int age) {
+        if (age < 0 || age > 150)
+            throw new IllegalArgumentException("Age must be between 0 and 150.");
+    }
+
+    private static void validateGender(String gender) {
+        if (gender == null || gender.trim().isEmpty())
+            throw new IllegalArgumentException("Gender cannot be empty.");
+        String g = gender.trim().toUpperCase();
+        if (!g.equals("MALE") && !g.equals("FEMALE"))
+            throw new IllegalArgumentException("Gender must be MALE OR FEMALE.");
+    }
+
+    private static void validateBloodGroup(String bloodGroup) {
+        if (bloodGroup == null || bloodGroup.trim().isEmpty())
+            throw new IllegalArgumentException("Blood group cannot be empty.");
+        String bg = bloodGroup.trim().toUpperCase();
+        for (String valid : VALID_BLOOD_GROUPS) {
+            if (valid.equals(bg)) return;
+        }
+        throw new IllegalArgumentException(
+            "Invalid blood group. Must be one of: A+, A-, B+, B-, AB+, AB-, O+, O-.");
+    }
+
+    private static void validateAddress(String address) {
+        if (address == null || address.trim().isEmpty())
+            throw new IllegalArgumentException("Address cannot be empty.");
+    }
+
+    // Constructor
+    public Patient(String userId, String name, String email,
                    String phoneNumber, String password,
                    int age, String gender, String bloodGroup, String address) {
         super(userId, name, email, phoneNumber, password);
+        validateAge(age);
+        validateGender(gender);
+        validateBloodGroup(bloodGroup);
+        validateAddress(address);
         this.age = age;
-        this.gender = gender;
-        this.bloodGroup = bloodGroup;
-        this.address = address;
+        this.gender = gender.trim().toUpperCase();
+        this.bloodGroup = bloodGroup.trim().toUpperCase();
+        this.address = address.trim();
         this.medicalHistory = new ArrayList<>();
         this.appointments = new ArrayList<>();
         this.prescriptions = new ArrayList<>();
     }
-    
+
     // Override abstract method from Person
     @Override
     public void displayProfile() {
@@ -49,18 +87,18 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         System.out.println("║ Appointments: " + String.format("%-24s", appointments.size()) + "║");
         System.out.println("╚════════════════════════════════════════╝\n");
     }
-    
-    public void bookAppointment(Doctor doctor, LocalDateTime dateTime, 
+
+    public void bookAppointment(Doctor doctor, LocalDateTime dateTime,
                                 String symptoms, String mode) {
         String appointmentId = "APT" + System.currentTimeMillis();
-        
+
         Appointment appointment = new Appointment(
             appointmentId, this, doctor, dateTime, symptoms, mode
         );
-        
+
         this.appointments.add(appointment);
         doctor.addAppointment(appointment);
-        
+
         System.out.println("\n✓ Appointment booked successfully!");
         System.out.println("  Appointment ID: " + appointmentId);
         System.out.println("  Doctor: Dr. " + doctor.getName());
@@ -68,23 +106,23 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         System.out.println("  Date & Time: " + dateTime);
         System.out.println("  Consultation Fee: Rs. " + doctor.getConsultationFee());
     }
-    
+
     public void viewAppointments() {
         if (appointments.isEmpty()) {
             System.out.println("\n✗ No appointments found.");
             return;
         }
-        
+
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║         YOUR APPOINTMENTS              ║");
         System.out.println("╚════════════════════════════════════════╝");
-        
+
         for (int i = 0; i < appointments.size(); i++) {
             System.out.println("\n" + (i + 1) + ".");
             appointments.get(i).displayAppointmentDetails();
         }
     }
-    
+
     public void viewAppointments(String status) {
         ArrayList<Appointment> filteredAppointments = new ArrayList<>();
         for (Appointment apt : appointments) {
@@ -92,38 +130,38 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
                 filteredAppointments.add(apt);
             }
         }
-        
+
         if (filteredAppointments.isEmpty()) {
             System.out.println("\n✗ No appointments found with status: " + status);
             return;
         }
-        
+
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║    APPOINTMENTS (" + status.toUpperCase() + ")       ║");
         System.out.println("╚════════════════════════════════════════╝");
-        
+
         for (int i = 0; i < filteredAppointments.size(); i++) {
             System.out.println("\n" + (i + 1) + ".");
             filteredAppointments.get(i).displayAppointmentDetails();
         }
     }
-    
+
     public void viewMedicalHistory() {
         if (medicalHistory.isEmpty()) {
             System.out.println("\n✗ No medical history available.");
             return;
         }
-        
+
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║         MEDICAL HISTORY                ║");
         System.out.println("╚════════════════════════════════════════╝");
-        
+
         for (MedicalRecord record : medicalHistory) {
             record.displayRecord();
             System.out.println("─────────────────────────────────────────");
         }
     }
-    
+
     public void cancelAppointment(String appointmentId) {
         for (Appointment apt : appointments) {
             if (apt.getAppointmentId().equals(appointmentId)) {
@@ -133,14 +171,13 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         }
         System.out.println("\n✗ Appointment not found.");
     }
-    
+
     public void addMedicalRecord(MedicalRecord record) {
         this.medicalHistory.add(record);
     }
-    
+
     public void addPrescription(Prescription prescription) {
         if (prescription != null) {
-            // Initialize if null (safety check for deserialized objects)
             if (this.prescriptions == null) {
                 this.prescriptions = new ArrayList<>();
             }
@@ -149,69 +186,80 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
             }
         }
     }
-    
+
     public void removePrescription(Prescription prescription) {
         if (prescription != null && this.prescriptions != null) {
             this.prescriptions.remove(prescription);
         }
     }
-    
+
     public void viewPrescriptions() {
         if (this.prescriptions == null || this.prescriptions.isEmpty()) {
             System.out.println("\n✗ No prescriptions found.");
             return;
         }
-        
+
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║         YOUR PRESCRIPTIONS             ║");
         System.out.println("╚════════════════════════════════════════╝");
-        
+
         for (int i = 0; i < prescriptions.size(); i++) {
             System.out.println("\n" + (i + 1) + ".");
             prescriptions.get(i).displayPrescription();
         }
     }
-    
-    public int getAge() { 
-        return age; 
+
+    // Getters and Setters
+    public int getAge() {
+        return age;
     }
-    
-    public void setAge(int age) { 
-        this.age = age; 
+
+    public void setAge(int age) {
+        validateAge(age);
+        this.age = age;
     }
-    
-    public String getGender() { 
-        return gender; 
+
+    public String getGender() {
+        return gender;
     }
-    
-    public String getBloodGroup() { 
-        return bloodGroup; 
+
+    public void setGender(String gender) {
+        validateGender(gender);
+        this.gender = gender.trim().toUpperCase();
     }
-    
-    public String getAddress() { 
-        return address; 
+
+    public String getBloodGroup() {
+        return bloodGroup;
     }
-    
-    public void setAddress(String address) { 
-        this.address = address; 
+
+    public void setBloodGroup(String bloodGroup) {
+        validateBloodGroup(bloodGroup);
+        this.bloodGroup = bloodGroup.trim().toUpperCase();
     }
-    
-    public ArrayList<Appointment> getAppointments() { 
-        return appointments; 
+
+    public String getAddress() {
+        return address;
     }
-    
-    public ArrayList<MedicalRecord> getMedicalHistory() { 
-        return medicalHistory; 
+
+    public void setAddress(String address) {
+        validateAddress(address);
+        this.address = address.trim();
     }
-    
-    public ArrayList<Prescription> getPrescriptions() { 
-        return prescriptions; 
+
+    public ArrayList<Appointment> getAppointments() {
+        return appointments;
     }
-    
+
+    public ArrayList<MedicalRecord> getMedicalHistory() {
+        return medicalHistory;
+    }
+
+    public ArrayList<Prescription> getPrescriptions() {
+        return prescriptions;
+    }
+
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
-        
-        
         if (this.prescriptions == null) {
             this.prescriptions = new ArrayList<>();
         }

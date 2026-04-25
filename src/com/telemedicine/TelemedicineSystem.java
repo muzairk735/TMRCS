@@ -39,6 +39,7 @@ public class TelemedicineSystem {
     }
     
     // MAIN MENU 
+    
     public void start() {
         while (true) {
             try {
@@ -219,12 +220,15 @@ public class TelemedicineSystem {
         System.out.print("Address: ");
         String address = scanner.nextLine().trim();
         
-        Patient newPatient = new Patient(userId, name, email, phone, 
-                                        password, age, gender, bloodGroup, address);
-        patients.add(newPatient);
-        
-        System.out.println("\n✓ Patient registered successfully!");
-        System.out.println("  Your Patient ID: " + userId);
+        try {
+            Patient newPatient = new Patient(userId, name, email, phone,
+                                            password, age, gender, bloodGroup, address);
+            patients.add(newPatient);
+            System.out.println("\n✓ Patient registered successfully!");
+            System.out.println("  Your Patient ID: " + userId);
+        } catch (IllegalArgumentException e) {
+            System.out.println("\n✗ Registration failed: " + e.getMessage());
+        }
         pauseScreen();
     }
     
@@ -245,23 +249,23 @@ public class TelemedicineSystem {
         switch (choice) {
             case 1:
                 System.out.print("Enter new name: ");
-                patient.setName(scanner.nextLine().trim());
-                System.out.println("✓ Name updated.");
+                try { patient.setName(scanner.nextLine().trim()); System.out.println("✓ Name updated."); }
+                catch (IllegalArgumentException e) { System.out.println("✗ " + e.getMessage()); }
                 break;
             case 2:
                 System.out.print("Enter new email: ");
-                patient.setEmail(scanner.nextLine().trim());
-                System.out.println("✓ Email updated.");
+                try { patient.setEmail(scanner.nextLine().trim()); System.out.println("✓ Email updated."); }
+                catch (IllegalArgumentException e) { System.out.println("✗ " + e.getMessage()); }
                 break;
             case 3:
                 System.out.print("Enter new phone: ");
-                patient.setPhoneNumber(scanner.nextLine().trim());
-                System.out.println("✓ Phone updated.");
+                try { patient.setPhoneNumber(scanner.nextLine().trim()); System.out.println("✓ Phone updated."); }
+                catch (IllegalArgumentException e) { System.out.println("✗ " + e.getMessage()); }
                 break;
             case 4:
                 System.out.print("Enter new address: ");
-                patient.setAddress(scanner.nextLine().trim());
-                System.out.println("✓ Address updated.");
+                try { patient.setAddress(scanner.nextLine().trim()); System.out.println("✓ Address updated."); }
+                catch (IllegalArgumentException e) { System.out.println("✗ " + e.getMessage()); }
                 break;
             case 5:
                 System.out.println("Update cancelled.");
@@ -827,7 +831,7 @@ public class TelemedicineSystem {
             System.out.println("✓ Message saved\n");
         }
     }
-   
+    
     private void runPhoneConsultation(Appointment appointment, Doctor doctor, Patient patient) {
         System.out.println("\n═══════════════════════════════════════════");
         System.out.println("        APPOINTMENT MESSAGING (PHONE)");
@@ -927,22 +931,24 @@ public class TelemedicineSystem {
     //     displayConsultationChat(doctor, selectedAppointment);
     // }
     
-    private void displayConsultationChat(Doctor doctor, Appointment appointment) {
-        clearScreen();
-        System.out.println("\n╔════════════════════════════════════════╗");
-        System.out.println("║      CONSULTATION CHAT HISTORY         ║");
-        System.out.println("╠════════════════════════════════════════╣");
-        System.out.println("║ Patient: " + String.format("%-29s", appointment.getPatient().getName()) + "║");
-        System.out.println("║ Mode: " + String.format("%-32s", appointment.getConsultationMode()) + "║");
-        System.out.println("╚════════════════════════════════════════╝\n");
+    
+    
+    // private void displayConsultationChat(Doctor doctor, Appointment appointment) {
+    //     clearScreen();
+    //     System.out.println("\n╔════════════════════════════════════════╗");
+    //     System.out.println("║      CONSULTATION CHAT HISTORY         ║");
+    //     System.out.println("╠════════════════════════════════════════╣");
+    //     System.out.println("║ Patient: " + String.format("%-29s", appointment.getPatient().getName()) + "║");
+    //     System.out.println("║ Mode: " + String.format("%-32s", appointment.getConsultationMode()) + "║");
+    //     System.out.println("╚════════════════════════════════════════╝\n");
         
-        // Display all messages in the conversation
-        for (Message msg : appointment.getConsultationMessages()) {
-            msg.displayMessage();
-        }
+    //     // Display all messages in the conversation
+    //     for (Message msg : appointment.getConsultationMessages()) {
+    //         msg.displayMessage();
+    //     }
         
-        pauseScreen();
-    }
+    //     pauseScreen();
+    // }
     
     private void issuePrescription(Doctor doctor) {
         clearScreen();
@@ -989,9 +995,13 @@ public class TelemedicineSystem {
                 System.out.print("Instructions: ");
                 String instructions = scanner.nextLine().trim();
                 
-                medicines.add(new Medicine(medicineName, dosage, frequency,
-                                          duration, instructions));
-                System.out.println("✓ Medicine added.");
+                try {
+                    medicines.add(new Medicine(medicineName, dosage, frequency,
+                                              duration, instructions));
+                    System.out.println("✓ Medicine added.");
+                } catch (IllegalArgumentException e) {
+                    System.out.println("✗ Invalid medicine data: " + e.getMessage());
+                }
             }
         }
         
@@ -1039,9 +1049,15 @@ public class TelemedicineSystem {
                 System.out.println("\n╔════════════════════════════════════════╗");
                 System.out.println("║       ADMIN DASHBOARD                  ║");
                 System.out.println("╠════════════════════════════════════════╣");
-                System.out.println("║  1. Remove Doctor                      ║");
-                System.out.println("║  7. Remove Patient                     ║");
-                System.out.println("║  8. Logout                             ║");
+                System.out.println("║  1. View My Profile                    ║");
+                System.out.println("║  2. View All Appointments              ║");
+                System.out.println("║  3. Generate System Report             ║");
+                System.out.println("║  4. View All Doctors                   ║");
+                System.out.println("║  5. View All Patients                  ║");
+                System.out.println("║  6. Add Doctor                         ║");
+                System.out.println("║  7. Remove Doctor                      ║");
+                System.out.println("║  8. Remove Patient                     ║");
+                System.out.println("║  9. Logout                             ║");
                 System.out.println("╚════════════════════════════════════════╝\n");
                 
                 int choice = getIntInput("Enter your choice: ");
@@ -1068,12 +1084,15 @@ public class TelemedicineSystem {
                         pauseScreen();
                         break;
                     case 6:
-                        removeDoctor(admin);
+                        addDoctor(admin);
                         break;
                     case 7:
-                        removePatient(admin);
+                        removeDoctor(admin);
                         break;
                     case 8:
+                        removePatient(admin);
+                        break;
+                    case 9:
                         currentUser = null;
                         currentUserType = null;
                         System.out.println("\n✓ Logged out successfully.");
@@ -1089,6 +1108,49 @@ public class TelemedicineSystem {
                 pauseScreen();
             }
         }
+    }
+    
+    private void addDoctor(Admin admin) {
+        clearScreen();
+        System.out.println("\n╔════════════════════════════════════════╗");
+        System.out.println("║         ADD NEW DOCTOR                 ║");
+        System.out.println("╚════════════════════════════════════════╝\n");
+        
+        String userId = "D" + (doctors.size() + 1001);
+        System.out.print("Name: ");
+        String name = scanner.nextLine().trim();
+        System.out.print("Email: ");
+        String email = scanner.nextLine().trim();
+        System.out.print("Phone: ");
+        String phone = scanner.nextLine().trim();
+        System.out.print("Password: ");
+        String password = scanner.nextLine().trim();
+        System.out.print("Specialization: ");
+        String specialization = scanner.nextLine().trim();
+        System.out.print("License Number: ");
+        String licenseNumber = scanner.nextLine().trim();
+        System.out.print("Years of Experience: ");
+        int experienceYears = getIntInput("");
+        System.out.print("Consultation Fee (Rs.): ");
+        double consultationFee;
+        try {
+            consultationFee = Double.parseDouble(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("✗ Invalid fee amount. Doctor not added.");
+            pauseScreen();
+            return;
+        }
+        
+        try {
+            Doctor newDoctor = new Doctor(userId, name, email, phone, password,
+                                         specialization, licenseNumber,
+                                         experienceYears, consultationFee);
+            admin.addDoctor(doctors, newDoctor);
+            System.out.println("  Doctor ID: " + userId);
+        } catch (IllegalArgumentException e) {
+            System.out.println("✗ Failed to add doctor: " + e.getMessage());
+        }
+        pauseScreen();
     }
     
     private void viewAllDoctors() {
