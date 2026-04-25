@@ -30,16 +30,17 @@ public class Admin extends Person implements Serializable {
     // Override abstract method
     @Override
     public void displayProfile() {
-        System.out.println("\n╔════════════════════════════════════════╗");
-        System.out.println("║         ADMIN PROFILE                  ║");
-        System.out.println("╠════════════════════════════════════════╣");
-        System.out.println("║ Admin ID: " + String.format("%-28s", userId) + "║");
-        System.out.println("║ Name: " + String.format("%-32s", name) + "║");
-        System.out.println("║ Level: " + String.format("%-31s", adminLevel) + "║");
-        System.out.println("║ Email: " + String.format("%-31s", email) + "║");
-        System.out.println("║ Phone: " + String.format("%-31s", phoneNumber) + "║");
-        System.out.println("║ Registered: " + String.format("%-26s", registrationDate.toString()) + "║");
-        System.out.println("╚════════════════════════════════════════╝\n");
+        int W = 38;
+        System.out.println("\n╔" + "═".repeat(W + 2) + "╗");
+        System.out.println("║" + Doctor.center("ADMIN PROFILE", W + 2) + "║");
+        System.out.println("╠" + "═".repeat(W + 2) + "╣");
+        Doctor.printRow("Admin ID",    userId,                      W);
+        Doctor.printRow("Name",        name,                        W);
+        Doctor.printRow("Level",       adminLevel,                  W);
+        Doctor.printRow("Email",       email,                       W);
+        Doctor.printRow("Phone",       phoneNumber,                 W);
+        Doctor.printRow("Registered",  registrationDate.toString(), W);
+        System.out.println("╚" + "═".repeat(W + 2) + "╝\n");
     }
 
     // Admin-specific methods
@@ -116,26 +117,21 @@ public class Admin extends Person implements Serializable {
 
     public void generateReport(ArrayList<Doctor> doctors, ArrayList<Patient> patients,
                               ArrayList<Appointment> appointments) {
-        System.out.println("\n╔════════════════════════════════════════╗");
-        System.out.println("║           SYSTEM REPORT                ║");
-        System.out.println("╠════════════════════════════════════════╣");
-        System.out.println("║ Total Doctors: " + String.format("%-23s", doctors.size()) + "║");
-        System.out.println("║ Total Patients: " + String.format("%-22s", patients.size()) + "║");
-        System.out.println("║ Total Appointments: " + String.format("%-17s", appointments.size()) + "║");
+        int W = 38;
+        long completed  = appointments.stream().filter(a -> a.getStatus().equals("COMPLETED")).count();
+        long pending    = appointments.stream().filter(a -> a.getStatus().equals("PENDING")).count();
+        long cancelled  = appointments.stream().filter(a -> a.getStatus().equals("CANCELLED")).count();
 
-        long completedCount = appointments.stream()
-            .filter(a -> a.getStatus().equals("COMPLETED")).count();
-        System.out.println("║ Completed Appointments: " + String.format("%-13s", completedCount) + "║");
-
-        long pendingCount = appointments.stream()
-            .filter(a -> a.getStatus().equals("PENDING")).count();
-        System.out.println("║ Pending Appointments: " + String.format("%-15s", pendingCount) + "║");
-
-        long cancelledCount = appointments.stream()
-            .filter(a -> a.getStatus().equals("CANCELLED")).count();
-        System.out.println("║ Cancelled Appointments: " + String.format("%-13s", cancelledCount) + "║");
-
-        System.out.println("╚════════════════════════════════════════╝\n");
+        System.out.println("\n╔" + "═".repeat(W + 2) + "╗");
+        System.out.println("║" + Doctor.center("SYSTEM REPORT", W + 2) + "║");
+        System.out.println("╠" + "═".repeat(W + 2) + "╣");
+        Doctor.printRow("Total Doctors",          String.valueOf(doctors.size()),      W);
+        Doctor.printRow("Total Patients",         String.valueOf(patients.size()),     W);
+        Doctor.printRow("Total Appointments",     String.valueOf(appointments.size()), W);
+        Doctor.printRow("Completed Appointments", String.valueOf(completed),           W);
+        Doctor.printRow("Pending Appointments",   String.valueOf(pending),             W);
+        Doctor.printRow("Cancelled Appointments", String.valueOf(cancelled),           W);
+        System.out.println("╚" + "═".repeat(W + 2) + "╝\n");
     }
 
     // Getters and Setters
