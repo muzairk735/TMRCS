@@ -7,22 +7,28 @@ public class Medicine implements Serializable {
 
     private String medicineName;
     private String dosage;
-    private String frequency; // Once daily, Twice daily, etc.
+    private String frequency;
     private int durationDays;
-    private String instructions; // After meals, Before sleep, etc.
+    private String instructions;
 
-    // Constructor
-    public Medicine(String medicineName, String dosage, String frequency,
-                   int durationDays, String instructions) {
-        if (medicineName == null || medicineName.trim().isEmpty())
+    public Medicine(
+            String medicineName,
+            String dosage,
+            String frequency,
+            int durationDays,
+            String instructions) {
+        if (medicineName == null || medicineName.trim().isEmpty()) {
             throw new IllegalArgumentException("Medicine name cannot be empty.");
-        if (dosage == null || dosage.trim().isEmpty())
+        }
+        if (dosage == null || dosage.trim().isEmpty()) {
             throw new IllegalArgumentException("Dosage cannot be empty.");
-        if (frequency == null || frequency.trim().isEmpty())
+        }
+        if (frequency == null || frequency.trim().isEmpty()) {
             throw new IllegalArgumentException("Frequency cannot be empty.");
-        if (durationDays <= 0 || durationDays > 365)
+        }
+        if (durationDays <= 0 || durationDays > 365) {
             throw new IllegalArgumentException("Duration must be between 1 and 365 days.");
-
+        }
         this.medicineName = medicineName.trim();
         this.dosage = dosage.trim();
         this.frequency = frequency.trim();
@@ -40,10 +46,9 @@ public class Medicine implements Serializable {
 
     public String getMedicineDetails() {
         return medicineName + " (" + dosage + ") - " + frequency +
-               " for " + durationDays + " days";
+                " for " + durationDays + " days";
     }
 
-    // Getters
     public String getMedicineName() {
         return medicineName;
     }

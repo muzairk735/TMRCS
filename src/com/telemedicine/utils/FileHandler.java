@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class FileHandler implements PersistableInterface {
     private String dataDirectory = "data/";
-    
+
     public FileHandler() {
         File dir = new File(dataDirectory);
         if (!dir.exists()) {
@@ -15,7 +15,7 @@ public class FileHandler implements PersistableInterface {
     }
     
     // PATIENT OPERATIONS
-    
+
     public void savePatients(ArrayList<Patient> patients) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
                 new FileOutputStream(dataDirectory + "patients.dat"))) {
@@ -24,7 +24,7 @@ public class FileHandler implements PersistableInterface {
             System.out.println("Error saving patients: " + e.getMessage());
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<Patient> loadPatients() {
         try (ObjectInputStream ois = new ObjectInputStream(
@@ -37,7 +37,7 @@ public class FileHandler implements PersistableInterface {
             return new ArrayList<>();
         }
     }
-    
+
     // DOCTOR OPERATIONS
     public void saveDoctors(ArrayList<Doctor> doctors) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
@@ -47,7 +47,7 @@ public class FileHandler implements PersistableInterface {
             System.out.println("Error saving doctors: " + e.getMessage());
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<Doctor> loadDoctors() {
         try (ObjectInputStream ois = new ObjectInputStream(
@@ -62,7 +62,7 @@ public class FileHandler implements PersistableInterface {
     }
     
     // APPOINTMENT OPERATIONS 
-    
+
     public void saveAppointments(ArrayList<Appointment> appointments) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
                 new FileOutputStream(dataDirectory + "appointments.dat"))) {
@@ -71,7 +71,7 @@ public class FileHandler implements PersistableInterface {
             System.out.println("Error saving appointments: " + e.getMessage());
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<Appointment> loadAppointments() {
         try (ObjectInputStream ois = new ObjectInputStream(
@@ -86,7 +86,7 @@ public class FileHandler implements PersistableInterface {
     }
     
     //  ADMIN OPERATIONS 
-    
+
     public void saveAdmins(ArrayList<Admin> admins) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
                 new FileOutputStream(dataDirectory + "admins.dat"))) {
@@ -95,7 +95,7 @@ public class FileHandler implements PersistableInterface {
             System.out.println("Error saving admins: " + e.getMessage());
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     public ArrayList<Admin> loadAdmins() {
         try (ObjectInputStream ois = new ObjectInputStream(
@@ -108,37 +108,28 @@ public class FileHandler implements PersistableInterface {
             return new ArrayList<>();
         }
     }
-    
+
     //  UTILITY METHODS 
     public boolean dataFilesExist() {
         return new File(dataDirectory + "patients.dat").exists() &&
-               new File(dataDirectory + "doctors.dat").exists();
+                new File(dataDirectory + "doctors.dat").exists();
     }
-    
+
     public void clearAllData() {
-        File patientsFile = new File(dataDirectory + "patients.dat");
-        File doctorsFile = new File(dataDirectory + "doctors.dat");
-        File appointmentsFile = new File(dataDirectory + "appointments.dat");
-        File adminsFile = new File(dataDirectory + "admins.dat");
-        
-        patientsFile.delete();
-        doctorsFile.delete();
-        appointmentsFile.delete();
-        adminsFile.delete();
-        
+        new File(dataDirectory + "patients.dat").delete();
+        new File(dataDirectory + "doctors.dat").delete();
+        new File(dataDirectory + "appointments.dat").delete();
+        new File(dataDirectory + "admins.dat").delete();
         System.out.println("✓ All data cleared.");
     }
-    
-    // IPERSISTABLE IMPLEMENTATION 
+
     @Override
     public void save() {
         System.out.println("Saving all system data...");
-        
     }
-    
+
     @Override
     public void load() {
         System.out.println("Loading system data...");
-        
     }
 }

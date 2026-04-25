@@ -13,11 +13,10 @@ public class TelemedicineSystem {
     private ArrayList<Admin>       admins;
     private ArrayList<Appointment> appointments;
     private FileHandler fileHandler;
-    private Scanner     scanner;
-    private Person      currentUser;
-    private String      currentUserType;
+    private Scanner scanner;
+    private Person currentUser;
+    private String currentUserType;
 
-    //  Constructor 
     public TelemedicineSystem() {
         patients     = new ArrayList<>();
         doctors      = new ArrayList<>();
@@ -32,26 +31,26 @@ public class TelemedicineSystem {
     }
 
     // MAIN MENU 
-    
+
     public void start() {
         while (true) {
             try {
                 displayMainMenu();
                 int choice = getMenuInput("Enter your choice: ");
                 switch (choice) {
-                    case 1: 
+                    case 1:
                         patientLogin();
                         break;
-                    case 2: 
-                        doctorLogin();    
+                    case 2:
+                        doctorLogin();
                         break;
-                    case 3: 
-                        adminLogin();     
+                    case 3:
+                        adminLogin();
                         break;
-                    case 4: 
+                    case 4:
                         registerPatient();
                         break;
-                    case 5: 
+                    case 5:
                         resetSampleData();
                         break;
                     case 6:
@@ -85,24 +84,28 @@ public class TelemedicineSystem {
     }
 
     // PATIENT SECTION 
-    
+
     private void patientLogin() {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║         PATIENT LOGIN                  ║");
         System.out.println("╚════════════════════════════════════════╝\n");
         System.out.print("Email: ");
-        String email    = scanner.nextLine().trim();
-        System.out.print("Password: "); 
+        String email = scanner.nextLine().trim();
+        System.out.print("Password: ");
         String password = scanner.nextLine().trim();
         for (Patient p : patients) {
             if (p.login(email, password)) {
-                currentUser = p; currentUserType = "PATIENT";
+                currentUser = p;
+                currentUserType = "PATIENT";
                 System.out.println("\n✓ Login successful! Welcome, " + p.getName());
-                pauseScreen(); patientDashboard(); return;
+                pauseScreen();
+                patientDashboard();
+                return;
             }
         }
-        System.out.println("\n✗ Invalid credentials."); pauseScreen();
+        System.out.println("\n✗ Invalid credentials.");
+        pauseScreen();
     }
 
     private void patientDashboard() {
@@ -128,44 +131,53 @@ public class TelemedicineSystem {
                 System.out.println("╚════════════════════════════════════════╝\n");
                 int choice = getMenuInput("Enter your choice: ");
                 switch (choice) {
-                    case 1:  
-                        patient.displayProfile(); 
-                        pauseScreen(); 
+                    case 1:
+                        patient.displayProfile();
+                        pauseScreen();
                         break;
-                    case 2:  
-                        updatePatientProfile(patient); 
+                    case 2:
+                        updatePatientProfile(patient);
                         break;
-                    case 3:  
-                        searchDoctors(); 
-                        pauseScreen(); 
+                    case 3:
+                        searchDoctors();
+                        pauseScreen();
                         break;
-                    case 4:  
-                        bookAppointment(patient); 
+                    case 4:
+                        bookAppointment(patient);
                         break;
-                    case 5:  
-                        patient.viewAppointments(); 
-                        pauseScreen(); 
+                    case 5:
+                        patient.viewAppointments();
+                        pauseScreen();
                         break;
-                    case 6:  
-                        cancelAppointment(patient); 
+                    case 6:
+                        cancelAppointment(patient);
                         break;
-                    case 7:  
-                        patient.viewPrescriptions(); 
-                        pauseScreen(); 
+                    case 7:
+                        patient.viewPrescriptions();
+                        pauseScreen();
                         break;
-                    case 8:  
-                        viewConsultationChat(patient); 
+                    case 8:
+                        viewConsultationChat(patient);
                         break;
-                    case 9:  
-                        patient.viewMedicalHistory(); 
-                        pauseScreen(); 
+                    case 9:
+                        patient.viewMedicalHistory();
+                        pauseScreen();
                         break;
                     case 10:
-                        currentUser = null; currentUserType = null;
-                        System.out.println("\n✓ Logged out successfully."); pauseScreen(); return;
-                    default: System.out.println("✗ Invalid choice."); pauseScreen();
+                        currentUser = null;
+                        currentUserType = null;
+                        System.out.println("\n✓ Logged out successfully.");
+                        pauseScreen();
+                        return;
+                    default:
+                        System.out.println("✗ Invalid choice.");
+                        pauseScreen();
                 }
-            } catch (Exception e) { System.out.println("Error: " + e.getMessage()); scanner.nextLine(); pauseScreen(); }
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+                scanner.nextLine();
+                pauseScreen();
+            }
         }
     }
 
@@ -175,16 +187,27 @@ public class TelemedicineSystem {
         System.out.println("║      PATIENT REGISTRATION              ║");
         System.out.println("╚════════════════════════════════════════╝\n");
         String userId = "P" + (patients.size() + 1001);
-        System.out.print("Name: ");         String name     = scanner.nextLine().trim();
-        System.out.print("Email: ");        String email    = scanner.nextLine().trim();
-        System.out.print("Phone: ");        String phone    = scanner.nextLine().trim();
-        System.out.print("Password: ");     String password = scanner.nextLine().trim();
+        System.out.print("Name: ");
+        String name = scanner.nextLine().trim();
+        System.out.print("Email: ");
+        String email = scanner.nextLine().trim();
+        System.out.print("Phone: ");
+        String phone = scanner.nextLine().trim();
+        System.out.print("Password: ");
+        String password = scanner.nextLine().trim();
         System.out.print("Age: ");
         Integer age = parseIntInput();
-        if (age == null) { System.out.println("✗ Invalid age — registration cancelled."); pauseScreen(); return; }
-        System.out.print("Gender (Male/Female): "); String gender     = scanner.nextLine().trim();
-        System.out.print("Blood Group: ");                String bloodGroup = scanner.nextLine().trim();
-        System.out.print("Address: ");                    String address    = scanner.nextLine().trim();
+        if (age == null) {
+            System.out.println("✗ Invalid age — registration cancelled.");
+            pauseScreen();
+            return;
+        }
+        System.out.print("Gender (Male/Female): ");
+        String gender = scanner.nextLine().trim();
+        System.out.print("Blood Group: ");
+        String bloodGroup = scanner.nextLine().trim();
+        System.out.print("Address: ");
+        String address = scanner.nextLine().trim();
         try {
             Patient p = new Patient(userId, name, email, phone, password, age, gender, bloodGroup, address);
             patients.add(p);
@@ -209,20 +232,47 @@ public class TelemedicineSystem {
         System.out.println("╚════════════════════════════════════════╝\n");
         int choice = getMenuInput("Select option: ");
         switch (choice) {
-            case 1: System.out.print("New name: ");
-                try { patient.setName(scanner.nextLine().trim()); System.out.println("✓ Name updated."); }
-                catch (IllegalArgumentException e) { System.out.println("✗ " + e.getMessage()); } break;
-            case 2: System.out.print("New email: ");
-                try { patient.setEmail(scanner.nextLine().trim()); System.out.println("✓ Email updated."); }
-                catch (IllegalArgumentException e) { System.out.println("✗ " + e.getMessage()); } break;
-            case 3: System.out.print("New phone: ");
-                try { patient.setPhoneNumber(scanner.nextLine().trim()); System.out.println("✓ Phone updated."); }
-                catch (IllegalArgumentException e) { System.out.println("✗ " + e.getMessage()); } break;
-            case 4: System.out.print("New address: ");
-                try { patient.setAddress(scanner.nextLine().trim()); System.out.println("✓ Address updated."); }
-                catch (IllegalArgumentException e) { System.out.println("✗ " + e.getMessage()); } break;
-            case 5: System.out.println("Cancelled."); break;
-            default: System.out.println("✗ Invalid choice.");
+            case 1:
+                System.out.print("New name: ");
+                try {
+                    patient.setName(scanner.nextLine().trim());
+                    System.out.println("✓ Name updated.");
+                } catch (IllegalArgumentException e) {
+                    System.out.println("✗ " + e.getMessage());
+                }
+                break;
+            case 2:
+                System.out.print("New email: ");
+                try {
+                    patient.setEmail(scanner.nextLine().trim());
+                    System.out.println("✓ Email updated.");
+                } catch (IllegalArgumentException e) {
+                    System.out.println("✗ " + e.getMessage());
+                }
+                break;
+            case 3:
+                System.out.print("New phone: ");
+                try {
+                    patient.setPhoneNumber(scanner.nextLine().trim());
+                    System.out.println("✓ Phone updated.");
+                } catch (IllegalArgumentException e) {
+                    System.out.println("✗ " + e.getMessage());
+                }
+                break;
+            case 4:
+                System.out.print("New address: ");
+                try {
+                    patient.setAddress(scanner.nextLine().trim());
+                    System.out.println("✓ Address updated.");
+                } catch (IllegalArgumentException e) {
+                    System.out.println("✗ " + e.getMessage());
+                }
+                break;
+            case 5:
+                System.out.println("Cancelled.");
+                break;
+            default:
+                System.out.println("✗ Invalid choice.");
         }
         pauseScreen();
     }
@@ -235,10 +285,15 @@ public class TelemedicineSystem {
         System.out.print("Search by specialization (or Enter for all): ");
         String term = scanner.nextLine().trim().toLowerCase();
         ArrayList<Doctor> results = new ArrayList<>();
-        for (Doctor d : doctors)
-            if (term.isEmpty() || d.getSpecialization().toLowerCase().contains(term))
+        for (Doctor d : doctors) {
+            if (term.isEmpty() || d.getSpecialization().toLowerCase().contains(term)) {
                 results.add(d);
-        if (results.isEmpty()) { System.out.println("✗ No doctors found."); return; }
+            }
+        }
+        if (results.isEmpty()) {
+            System.out.println("✗ No doctors found.");
+            return;
+        }
         System.out.println("\nFound " + results.size() + " doctor(s):\n");
         for (int i = 0; i < results.size(); i++) {
             Doctor d = results.get(i);
@@ -256,15 +311,23 @@ public class TelemedicineSystem {
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║        BOOK APPOINTMENT                ║");
         System.out.println("╚════════════════════════════════════════╝\n");
-        if (doctors.isEmpty()) { System.out.println("✗ No doctors available."); pauseScreen(); return; }
+        if (doctors.isEmpty()) {
+            System.out.println("✗ No doctors available.");
+            pauseScreen();
+            return;
+        }
         System.out.println("Available Doctors:\n");
         for (int i = 0; i < doctors.size(); i++) {
             Doctor d = doctors.get(i);
             System.out.println((i + 1) + ". Dr. " + d.getName() +
-                " - " + d.getSpecialization() + " (Rs. " + d.getConsultationFee() + ")");
+                    " - " + d.getSpecialization() + " (Rs. " + d.getConsultationFee() + ")");
         }
         int dc = getMenuInput("\nSelect doctor (1-" + doctors.size() + "): ");
-        if (dc < 1 || dc > doctors.size()) { System.out.println("✗ Invalid selection."); pauseScreen(); return; }
+        if (dc < 1 || dc > doctors.size()) {
+            System.out.println("✗ Invalid selection.");
+            pauseScreen();
+            return;
+        }
         Doctor selected = doctors.get(dc - 1);
 
         System.out.print("\nEnter date (DD-MM-YYYY): ");
@@ -272,19 +335,37 @@ public class TelemedicineSystem {
         LocalDate date;
         try {
             date = LocalDate.parse(dateStr, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-            if (date.isBefore(LocalDate.now())) { System.out.println("✗ Cannot book in the past."); pauseScreen(); return; }
-        } catch (Exception e) { System.out.println("✗ Invalid date format."); pauseScreen(); return; }
+            if (date.isBefore(LocalDate.now())) {
+                System.out.println("✗ Cannot book in the past.");
+                pauseScreen();
+                return;
+            }
+        } catch (Exception e) {
+            System.out.println("✗ Invalid date format.");
+            pauseScreen();
+            return;
+        }
 
         ArrayList<TimeSlot> slots = selected.getAvailableSlots(date);
-        if (slots.isEmpty()) { System.out.println("\n✗ No available slots for this date."); pauseScreen(); return; }
+        if (slots.isEmpty()) {
+            System.out.println("\n✗ No available slots for this date.");
+            pauseScreen();
+            return;
+        }
         System.out.println("\nAvailable Time Slots:");
-        for (int i = 0; i < slots.size(); i++)
+        for (int i = 0; i < slots.size(); i++) {
             System.out.println((i + 1) + ". " + slots.get(i).getStartTime() + " - " + slots.get(i).getEndTime());
+        }
         int sc = getMenuInput("\nSelect time slot: ");
-        if (sc < 1 || sc > slots.size()) { System.out.println("✗ Invalid selection."); pauseScreen(); return; }
+        if (sc < 1 || sc > slots.size()) {
+            System.out.println("✗ Invalid selection.");
+            pauseScreen();
+            return;
+        }
         TimeSlot slot = slots.get(sc - 1);
 
-        System.out.print("Describe your symptoms: "); String symptoms = scanner.nextLine().trim();
+        System.out.print("Describe your symptoms: ");
+        String symptoms = scanner.nextLine().trim();
         System.out.println("\nConsultation Mode:\n1. Video Call\n2. Phone Call\n3. Chat");
         int mode = getMenuInput("Select mode: ");
         String modeStr = mode == 2 ? "PHONE" : mode == 3 ? "CHAT" : "VIDEO";
@@ -300,11 +381,15 @@ public class TelemedicineSystem {
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║      CANCEL APPOINTMENT                ║");
         System.out.println("╚════════════════════════════════════════╝\n");
-        if (patient.getAppointments().isEmpty()) { System.out.println("✗ No appointments to cancel."); pauseScreen(); return; }
+        if (patient.getAppointments().isEmpty()) {
+            System.out.println("✗ No appointments to cancel.");
+            pauseScreen();
+            return;
+        }
         for (int i = 0; i < patient.getAppointments().size(); i++) {
             Appointment a = patient.getAppointments().get(i);
             System.out.println((i + 1) + ". ID: " + a.getAppointmentId() +
-                " | Dr. " + a.getDoctor().getName() + " | " + a.getStatus());
+                    " | Dr. " + a.getDoctor().getName() + " | " + a.getStatus());
         }
         System.out.print("\nEnter Appointment ID to cancel: ");
         patient.cancelAppointment(scanner.nextLine().trim());
@@ -317,15 +402,20 @@ public class TelemedicineSystem {
         System.out.println("║   VIEW CONSULTATION CHAT               ║");
         System.out.println("╚════════════════════════════════════════╝\n");
         ArrayList<Appointment> chats = new ArrayList<>();
-        for (Appointment a : patient.getAppointments())
+        for (Appointment a : patient.getAppointments()) {
             if (!a.getConsultationMessages().isEmpty()) chats.add(a);
-        if (chats.isEmpty()) { System.out.println("✗ No consultation chats yet."); pauseScreen(); return; }
+        }
+        if (chats.isEmpty()) {
+            System.out.println("✗ No consultation chats yet.");
+            pauseScreen();
+            return;
+        }
         for (int i = 0; i < chats.size(); i++) {
             Appointment a = chats.get(i);
             String sym = a.getSymptoms();
             System.out.println((i + 1) + ". Dr. " + a.getDoctor().getName() +
-                " | " + a.getConsultationMode() + " | " +
-                sym.substring(0, Math.min(25, sym.length())) + "...");
+                    " | " + a.getConsultationMode() + " | " +
+                    sym.substring(0, Math.min(25, sym.length())) + "...");
         }
         int choice = getMenuInput("\nEnter chat number (or 0 to go back): ");
         if (choice < 1 || choice > chats.size()) return;
@@ -338,16 +428,22 @@ public class TelemedicineSystem {
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║         DOCTOR LOGIN                   ║");
         System.out.println("╚════════════════════════════════════════╝\n");
-        System.out.print("Email: ");    String email    = scanner.nextLine().trim();
-        System.out.print("Password: "); String password = scanner.nextLine().trim();
+        System.out.print("Email: ");
+        String email = scanner.nextLine().trim();
+        System.out.print("Password: ");
+        String password = scanner.nextLine().trim();
         for (Doctor d : doctors) {
             if (d.login(email, password)) {
-                currentUser = d; currentUserType = "DOCTOR";
+                currentUser = d;
+                currentUserType = "DOCTOR";
                 System.out.println("\n✓ Login successful! Welcome, Dr. " + d.getName());
-                pauseScreen(); doctorDashboard(); return;
+                pauseScreen();
+                doctorDashboard();
+                return;
             }
         }
-        System.out.println("\n✗ Invalid credentials."); pauseScreen();
+        System.out.println("\n✗ Invalid credentials.");
+        pauseScreen();
     }
 
     private void doctorDashboard() {
@@ -364,7 +460,7 @@ public class TelemedicineSystem {
                 System.out.println("║  2. Set Availability                   ║");
                 System.out.println("║  3. View All Appointments              ║");
                 System.out.println("║  4. View Pending Appointments          ║");
-                System.out.println("║  5. View Completed Appointments        ║");
+                System.out.println("║  5. View Confirmed Appointments        ║");
                 System.out.println("║  6. Conduct Consultation / Open Chat   ║");
                 System.out.println("║  7. Issue Prescription                 ║");
                 System.out.println("║  8. View My Issued Prescriptions       ║");
@@ -372,26 +468,57 @@ public class TelemedicineSystem {
                 System.out.println("╚════════════════════════════════════════╝\n");
                 int choice = getMenuInput("Enter your choice: ");
                 switch (choice) {
-                    case 1: doctor.displayProfile(); pauseScreen(); break;
-                    case 2: clearScreen(); doctor.promptSetAvailability(scanner); pauseScreen(); break;
-                    case 3: doctor.viewAppointments("ALL"); pauseScreen(); break;
-                    case 4: doctor.viewAppointments("PENDING"); pauseScreen(); break;
-                    case 5: doctor.viewAppointments("COMPLETED"); pauseScreen(); break;
-                    case 6: conductConsultation(doctor); break;
+                    case 1:
+                        doctor.displayProfile();
+                        pauseScreen();
+                        break;
+                    case 2:
+                        clearScreen();
+                        doctor.promptSetAvailability(scanner);
+                        pauseScreen();
+                        break;
+                    case 3:
+                        doctor.viewAppointments("ALL");
+                        pauseScreen();
+                        break;
+                    case 4:
+                        doctor.viewAppointments("PENDING");
+                        pauseScreen();
+                        break;
+                    case 5:
+                        doctor.viewAppointments("CONFIRMED");
+                        pauseScreen();
+                        break;
+                    case 6:
+                        conductConsultation(doctor);
+                        break;
                     case 7:
                         clearScreen();
                         System.out.println("\n╔════════════════════════════════════════╗");
                         System.out.println("║      ISSUE PRESCRIPTION                ║");
                         System.out.println("╚════════════════════════════════════════╝\n");
                         doctor.promptIssuePrescription(patients, scanner);
-                        pauseScreen(); break;
-                    case 8: doctor.viewIssuedPrescriptions(); pauseScreen(); break;
+                        pauseScreen();
+                        break;
+                    case 8:
+                        doctor.viewIssuedPrescriptions();
+                        pauseScreen();
+                        break;
                     case 9:
-                        currentUser = null; currentUserType = null;
-                        System.out.println("\n✓ Logged out successfully."); pauseScreen(); return;
-                    default: System.out.println("✗ Invalid choice."); pauseScreen();
+                        currentUser = null;
+                        currentUserType = null;
+                        System.out.println("\n✓ Logged out successfully.");
+                        pauseScreen();
+                        return;
+                    default:
+                        System.out.println("✗ Invalid choice.");
+                        pauseScreen();
                 }
-            } catch (Exception e) { System.out.println("Error: " + e.getMessage()); scanner.nextLine(); pauseScreen(); }
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+                scanner.nextLine();
+                pauseScreen();
+            }
         }
     }
 
@@ -401,10 +528,16 @@ public class TelemedicineSystem {
         System.out.println("║      CONDUCT CONSULTATION              ║");
         System.out.println("╚════════════════════════════════════════╝\n");
         ArrayList<Appointment> pending = new ArrayList<>();
-        for (Appointment a : doctor.getAppointments())
-            if (a.getStatus().equals("PENDING") || a.getStatus().equals("CONFIRMED"))
+        for (Appointment a : doctor.getAppointments()) {
+            if (a.getStatus().equals("PENDING") || a.getStatus().equals("CONFIRMED")) {
                 pending.add(a);
-        if (pending.isEmpty()) { System.out.println("✗ No pending appointments."); pauseScreen(); return; }
+            }
+        }
+        if (pending.isEmpty()) {
+            System.out.println("✗ No pending appointments.");
+            pauseScreen();
+            return;
+        }
         for (int i = 0; i < pending.size(); i++) {
             Appointment a = pending.get(i);
             System.out.println((i + 1) + ". " + a.getPatient().getName() + " | ID: " + a.getAppointmentId());
@@ -417,7 +550,8 @@ public class TelemedicineSystem {
                 return;
             }
         }
-        System.out.println("✗ Appointment not found."); pauseScreen();
+        System.out.println("✗ Appointment not found.");
+        pauseScreen();
     }
 
     // ADMIN SECTION
@@ -426,16 +560,22 @@ public class TelemedicineSystem {
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║         ADMIN LOGIN                    ║");
         System.out.println("╚════════════════════════════════════════╝\n");
-        System.out.print("Email: ");    String email    = scanner.nextLine().trim();
-        System.out.print("Password: "); String password = scanner.nextLine().trim();
+        System.out.print("Email: ");
+        String email = scanner.nextLine().trim();
+        System.out.print("Password: ");
+        String password = scanner.nextLine().trim();
         for (Admin a : admins) {
             if (a.login(email, password)) {
-                currentUser = a; currentUserType = "ADMIN";
+                currentUser = a;
+                currentUserType = "ADMIN";
                 System.out.println("\n✓ Login successful! Welcome, Admin");
-                pauseScreen(); adminDashboard(); return;
+                pauseScreen();
+                adminDashboard();
+                return;
             }
         }
-        System.out.println("\n✗ Invalid credentials."); pauseScreen();
+        System.out.println("\n✗ Invalid credentials.");
+        pauseScreen();
     }
 
     private void adminDashboard() {
@@ -458,20 +598,50 @@ public class TelemedicineSystem {
                 System.out.println("╚════════════════════════════════════════╝\n");
                 int choice = getMenuInput("Enter your choice: ");
                 switch (choice) {
-                    case 1: admin.displayProfile(); pauseScreen(); break;
-                    case 2: admin.viewAllAppointments(appointments); pauseScreen(); break;
-                    case 3: admin.generateReport(doctors, patients, appointments); pauseScreen(); break;
-                    case 4: viewAllDoctors(); pauseScreen(); break;
-                    case 5: viewAllPatients(); pauseScreen(); break;
-                    case 6: addDoctor(admin); break;
-                    case 7: removeDoctor(admin); break;
-                    case 8: removePatient(admin); break;
+                    case 1:
+                        admin.displayProfile();
+                        pauseScreen();
+                        break;
+                    case 2:
+                        admin.viewAllAppointments(appointments);
+                        pauseScreen();
+                        break;
+                    case 3:
+                        admin.generateReport(doctors, patients, appointments);
+                        pauseScreen();
+                        break;
+                    case 4:
+                        viewAllDoctors();
+                        pauseScreen();
+                        break;
+                    case 5:
+                        viewAllPatients();
+                        pauseScreen();
+                        break;
+                    case 6:
+                        addDoctor(admin);
+                        break;
+                    case 7:
+                        removeDoctor(admin);
+                        break;
+                    case 8:
+                        removePatient(admin);
+                        break;
                     case 9:
-                        currentUser = null; currentUserType = null;
-                        System.out.println("\n✓ Logged out successfully."); pauseScreen(); return;
-                    default: System.out.println("✗ Invalid choice."); pauseScreen();
+                        currentUser = null;
+                        currentUserType = null;
+                        System.out.println("\n✓ Logged out successfully.");
+                        pauseScreen();
+                        return;
+                    default:
+                        System.out.println("✗ Invalid choice.");
+                        pauseScreen();
                 }
-            } catch (Exception e) { System.out.println("Error: " + e.getMessage()); scanner.nextLine(); pauseScreen(); }
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+                scanner.nextLine();
+                pauseScreen();
+            }
         }
     }
 
@@ -481,19 +651,34 @@ public class TelemedicineSystem {
         System.out.println("║         ADD NEW DOCTOR                 ║");
         System.out.println("╚════════════════════════════════════════╝\n");
         String userId = "D" + (doctors.size() + 1001);
-        System.out.print("Name: ");            String name   = scanner.nextLine().trim();
-        System.out.print("Email: ");           String email  = scanner.nextLine().trim();
-        System.out.print("Phone: ");           String phone  = scanner.nextLine().trim();
-        System.out.print("Password: ");        String pass   = scanner.nextLine().trim();
-        System.out.print("Specialization: ");  String spec   = scanner.nextLine().trim();
-        System.out.print("License Number: ");  String lic    = scanner.nextLine().trim();
+        System.out.print("Name: ");
+        String name = scanner.nextLine().trim();
+        System.out.print("Email: ");
+        String email = scanner.nextLine().trim();
+        System.out.print("Phone: ");
+        String phone = scanner.nextLine().trim();
+        System.out.print("Password: ");
+        String pass = scanner.nextLine().trim();
+        System.out.print("Specialization: ");
+        String spec = scanner.nextLine().trim();
+        System.out.print("License Number: ");
+        String lic = scanner.nextLine().trim();
         System.out.print("Years of Experience: ");
         Integer exp = parseIntInput();
-        if (exp == null) { System.out.println("✗ Invalid experience — doctor not added."); pauseScreen(); return; }
+        if (exp == null) {
+            System.out.println("✗ Invalid experience — doctor not added.");
+            pauseScreen();
+            return;
+        }
         System.out.print("Consultation Fee (Rs.): ");
         double fee;
-        try { fee = Double.parseDouble(scanner.nextLine().trim()); }
-        catch (NumberFormatException e) { System.out.println("✗ Invalid fee — doctor not added."); pauseScreen(); return; }
+        try {
+            fee = Double.parseDouble(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            System.out.println("✗ Invalid fee — doctor not added.");
+            pauseScreen();
+            return;
+        }
         try {
             Doctor d = new Doctor(userId, name, email, phone, pass, spec, lic, exp, fee);
             admin.addDoctor(doctors, d);
@@ -509,7 +694,10 @@ public class TelemedicineSystem {
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║         ALL DOCTORS                    ║");
         System.out.println("╚════════════════════════════════════════╝\n");
-        if (doctors.isEmpty()) { System.out.println("✗ No doctors registered."); return; }
+        if (doctors.isEmpty()) {
+            System.out.println("✗ No doctors registered.");
+            return;
+        }
         for (int i = 0; i < doctors.size(); i++) {
             Doctor d = doctors.get(i);
             System.out.println((i + 1) + ". Dr. " + d.getName());
@@ -524,7 +712,10 @@ public class TelemedicineSystem {
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║         ALL PATIENTS                   ║");
         System.out.println("╚════════════════════════════════════════╝\n");
-        if (patients.isEmpty()) { System.out.println("✗ No patients registered."); return; }
+        if (patients.isEmpty()) {
+            System.out.println("✗ No patients registered.");
+            return;
+        }
         for (int i = 0; i < patients.size(); i++) {
             Patient p = patients.get(i);
             System.out.println((i + 1) + ". " + p.getName());
@@ -539,17 +730,33 @@ public class TelemedicineSystem {
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║      REMOVE DOCTOR                     ║");
         System.out.println("╚════════════════════════════════════════╝\n");
-        if (doctors.isEmpty()) { System.out.println("✗ No doctors to remove."); pauseScreen(); return; }
-        for (int i = 0; i < doctors.size(); i++)
-            System.out.println((i + 1) + ". Dr. " + doctors.get(i).getName() + " (ID: " + doctors.get(i).getUserId() + ")");
+        if (doctors.isEmpty()) {
+            System.out.println("✗ No doctors to remove.");
+            pauseScreen();
+            return;
+        }
+        for (int i = 0; i < doctors.size(); i++) {
+            System.out.println((i + 1) + ". Dr. " + doctors.get(i).getName() +
+                    " (ID: " + doctors.get(i).getUserId() + ")");
+        }
         int choice = getMenuInput("\nSelect doctor (1-" + doctors.size() + ") or 0 to cancel: ");
-        if (choice == 0) { System.out.println("Cancelled."); pauseScreen(); return; }
-        if (choice < 1 || choice > doctors.size()) { System.out.println("✗ Invalid selection."); pauseScreen(); return; }
+        if (choice == 0) {
+            System.out.println("Cancelled.");
+            pauseScreen();
+            return;
+        }
+        if (choice < 1 || choice > doctors.size()) {
+            System.out.println("✗ Invalid selection.");
+            pauseScreen();
+            return;
+        }
         Doctor d = doctors.get(choice - 1);
         System.out.print("\nRemove Dr. " + d.getName() + "? (yes/no): ");
         if (scanner.nextLine().trim().equalsIgnoreCase("yes")) {
             admin.removeDoctor(doctors, d.getUserId());
-        } else { System.out.println("Cancelled."); }
+        } else {
+            System.out.println("Cancelled.");
+        }
         pauseScreen();
     }
 
@@ -558,33 +765,53 @@ public class TelemedicineSystem {
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║      REMOVE PATIENT                    ║");
         System.out.println("╚════════════════════════════════════════╝\n");
-        if (patients.isEmpty()) { System.out.println("✗ No patients to remove."); pauseScreen(); return; }
-        for (int i = 0; i < patients.size(); i++)
-            System.out.println((i + 1) + ". " + patients.get(i).getName() + " (ID: " + patients.get(i).getUserId() + ")");
+        if (patients.isEmpty()) {
+            System.out.println("✗ No patients to remove.");
+            pauseScreen();
+            return;
+        }
+        for (int i = 0; i < patients.size(); i++) {
+            System.out.println((i + 1) + ". " + patients.get(i).getName() +
+                    " (ID: " + patients.get(i).getUserId() + ")");
+        }
         int choice = getMenuInput("\nSelect patient (1-" + patients.size() + ") or 0 to cancel: ");
-        if (choice == 0) { System.out.println("Cancelled."); pauseScreen(); return; }
-        if (choice < 1 || choice > patients.size()) { System.out.println("✗ Invalid selection."); pauseScreen(); return; }
+        if (choice == 0) {
+            System.out.println("Cancelled.");
+            pauseScreen();
+            return;
+        }
+        if (choice < 1 || choice > patients.size()) {
+            System.out.println("✗ Invalid selection.");
+            pauseScreen();
+            return;
+        }
         Patient p = patients.get(choice - 1);
         System.out.print("\nRemove " + p.getName() + "? (yes/no): ");
         if (scanner.nextLine().trim().equalsIgnoreCase("yes")) {
             admin.removePatient(patients, p.getUserId());
-        } else { System.out.println("Cancelled."); }
+        } else {
+            System.out.println("Cancelled.");
+        }
         pauseScreen();
     }
-
-    // Utility
 
     private int getMenuInput(String prompt) {
         while (true) {
             if (!prompt.isEmpty()) System.out.print(prompt);
-            try { return Integer.parseInt(scanner.nextLine().trim()); }
-            catch (NumberFormatException e) { System.out.println("✗ Please enter a valid number."); }
+            try {
+                return Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("✗ Please enter a valid number.");
+            }
         }
     }
 
     private Integer parseIntInput() {
-        try { return Integer.parseInt(scanner.nextLine().trim()); }
-        catch (NumberFormatException e) { return null; }
+        try {
+            return Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 
     private String truncate(String s, int max) {
@@ -594,10 +821,15 @@ public class TelemedicineSystem {
 
     private void clearScreen() {
         try {
-            if (System.getProperty("os.name").contains("Windows"))
+            if (System.getProperty("os.name").contains("Windows")) {
                 new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-            else { System.out.print("\033[H\033[2J"); System.out.flush(); }
-        } catch (Exception e) { for (int i = 0; i < 50; i++) System.out.println(); }
+            } else {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+            }
+        } catch (Exception e) {
+            for (int i = 0; i < 50; i++) System.out.println();
+        }
     }
 
     private void pauseScreen() {
@@ -605,7 +837,6 @@ public class TelemedicineSystem {
         scanner.nextLine();
     }
 
-    //  Persistence
     private void saveAllData() {
         System.out.println("\nSaving data...");
         fileHandler.savePatients(patients);
@@ -630,33 +861,44 @@ public class TelemedicineSystem {
         System.out.println("This will clear all data and reload fresh sample data.\n");
         System.out.print("Are you sure? (yes/no): ");
         if (scanner.nextLine().trim().equalsIgnoreCase("yes")) {
-            doctors.clear(); patients.clear(); appointments.clear(); admins.clear();
+            doctors.clear();
+            patients.clear();
+            appointments.clear();
+            admins.clear();
             addSampleData();
             saveAllData();
             System.out.println("\n✓ Sample data reloaded successfully!");
             System.out.println("  - 3 sample doctors  - 1 admin  - 1 patient");
-        } else { System.out.println("\n✗ Cancelled."); }
+        } else {
+            System.out.println("\n✗ Cancelled.");
+        }
         pauseScreen();
     }
 
-    // Sample data
     private void addSampleData() {
-        Doctor d1 = new Doctor("D001", "Fatima Khan", "fatima@hospital.com",
-            "0301-1111111", "doc123", "Cardiologist", "PMC-12345", 10, 2000.0);
-        Doctor d2 = new Doctor("D002", "Ali Raza", "ali@hospital.com",
-            "0302-2222222", "doc123", "Dermatologist", "PMC-12346", 8, 1500.0);
-        Doctor d3 = new Doctor("D003", "Sara Ahmed", "sara@hospital.com",
-            "0303-3333333", "doc123", "Pediatrician", "PMC-12347", 12, 1800.0);
+        Doctor d1 = new Doctor(
+                "D001", "Fatima Khan", "fatima@hospital.com",
+                "0301-1111111", "doc123", "Cardiologist", "PMC-12345", 10, 2000.0);
+        Doctor d2 = new Doctor(
+                "D002", "Ali Raza", "ali@hospital.com",
+                "0302-2222222", "doc123", "Dermatologist", "PMC-12346", 8, 1500.0);
+        Doctor d3 = new Doctor(
+                "D003", "Sara Ahmed", "sara@hospital.com",
+                "0303-3333333", "doc123", "Pediatrician", "PMC-12347", 12, 1800.0);
         for (int i = 1; i <= 7; i++) {
             d1.setAvailability(LocalDate.now().plusDays(i), LocalTime.of(9,  0), LocalTime.of(17, 0));
             d2.setAvailability(LocalDate.now().plusDays(i), LocalTime.of(10, 0), LocalTime.of(16, 0));
             d3.setAvailability(LocalDate.now().plusDays(i), LocalTime.of(8,  0), LocalTime.of(14, 0));
         }
-        doctors.add(d1); doctors.add(d2); doctors.add(d3);
-        admins.add(new Admin("A001", "Admin User", "admin@system.com",
-            "0300-0000000", "admin123", "super_admin"));
-        patients.add(new Patient("P001", "Ahmed Ali", "ahmed@email.com",
-            "0300-1234567", "pass123", 28, "Male", "B+", "Rawalpindi"));
+        doctors.add(d1);
+        doctors.add(d2);
+        doctors.add(d3);
+        admins.add(new Admin(
+                "A001", "Admin User", "admin@system.com",
+                "0300-0000000", "admin123", "super_admin"));
+        patients.add(new Patient(
+                "P001", "Ahmed Ali", "ahmed@email.com",
+                "0300-1234567", "pass123", 28, "Male", "B+", "Rawalpindi"));
         System.out.println("✓ Sample data loaded.");
     }
 }

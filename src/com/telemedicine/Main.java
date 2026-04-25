@@ -6,9 +6,7 @@ public class Main {
         System.out.println("║   TELEMEDICINE & REMOTE CONSULTATION   ║");
         System.out.println("║     SYSTEM - Initializing...           ║");
         System.out.println("╚════════════════════════════════════════╝\n");
-        
         try {
-            // Create and start the system
             TelemedicineSystem system = new TelemedicineSystem();
             system.start();
         } catch (Exception e) {

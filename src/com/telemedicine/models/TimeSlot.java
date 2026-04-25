@@ -8,8 +8,7 @@ import java.time.temporal.ChronoUnit;
 public class TimeSlot implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    // Attributes
-    private String slotId;
+    private String    slotId;
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
@@ -75,8 +74,8 @@ public class TimeSlot implements Serializable {
 
     public void displaySlotInfo() {
         System.out.println("  Slot: " + date + " | " + startTime +
-                         " - " + endTime +
-                         " | Status: " + (isAvailable ? "Available" : "Booked"));
+                " - " + endTime +
+                " | Status: " + (isAvailable ? "Available" : "Booked"));
     }
 
     // Getters

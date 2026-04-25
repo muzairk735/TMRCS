@@ -24,34 +24,49 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
 
     //  Validators
     private static void validateSpecialization(String s) {
-        if (s == null || s.trim().isEmpty())
+        if (s == null || s.trim().isEmpty()) {
             throw new IllegalArgumentException("Specialization cannot be empty.");
-        if (s.trim().length() < 3)
+        }
+        if (s.trim().length() < 3) {
             throw new IllegalArgumentException("Specialization must be at least 3 characters.");
-    }
-    private static void validateLicenseNumber(String l) {
-        if (l == null || l.trim().isEmpty())
-            throw new IllegalArgumentException("License number cannot be empty.");
-        if (!l.trim().matches("^[A-Za-z0-9\\-]{5,20}$"))
-            throw new IllegalArgumentException(
-                "License number must be 5-20 alphanumeric characters (hyphens allowed).");
-    }
-    private static void validateExperienceYears(int y) {
-        if (y < 0 || y > 70)
-            throw new IllegalArgumentException("Experience years must be between 0 and 70.");
-    }
-    private static void validateConsultationFee(double f) {
-        if (f < 0)
-            throw new IllegalArgumentException("Consultation fee cannot be negative.");
-        if (f > 1_000_000)
-            throw new IllegalArgumentException("Consultation fee is unrealistically high.");
+        }
     }
 
-    //  Constructor 
-    public Doctor(String userId, String name, String email,
-                  String phoneNumber, String password,
-                  String specialization, String licenseNumber,
-                  int experienceYears, double consultationFee) {
+    private static void validateLicenseNumber(String l) {
+        if (l == null || l.trim().isEmpty()) {
+            throw new IllegalArgumentException("License number cannot be empty.");
+        }
+        if (!l.trim().matches("^[A-Za-z0-9\\-]{5,20}$")) {
+            throw new IllegalArgumentException(
+                    "License number must be 5-20 alphanumeric characters (hyphens allowed).");
+        }
+    }
+
+    private static void validateExperienceYears(int y) {
+        if (y < 0 || y > 70) {
+            throw new IllegalArgumentException("Experience years must be between 0 and 70.");
+        }
+    }
+
+    private static void validateConsultationFee(double f) {
+        if (f < 0) {
+            throw new IllegalArgumentException("Consultation fee cannot be negative.");
+        }
+        if (f > 1_000_000) {
+            throw new IllegalArgumentException("Consultation fee is unrealistically high.");
+        }
+    }
+
+    public Doctor(
+            String userId,
+            String name,
+            String email,
+            String phoneNumber,
+            String password,
+            String specialization,
+            String licenseNumber,
+            int experienceYears,
+            double consultationFee) {
         super(userId, name, email, phoneNumber, password);
         validateSpecialization(specialization);
         validateLicenseNumber(licenseNumber);
@@ -68,25 +83,25 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         this.totalRatings = 0;
     }
 
-    // Display 
     @Override
     public void displayProfile() {
-        int W = 38; // inner content width
-        System.out.println("\n╔" + "═".repeat(W + 2) + "╗");
-        System.out.println("║" + center("DOCTOR PROFILE", W + 2) + "║");
-        System.out.println("╠" + "═".repeat(W + 2) + "╣");
-        printRow("Doctor ID",    userId,                    W);
-        printRow("Name",         "Dr. " + name,             W);
-        printRow("Specialization", specialization,          W);
-        printRow("License",      licenseNumber,             W);
-        printRow("Experience",   experienceYears + " years",W);
-        printRow("Fee",          "Rs. " + consultationFee,  W);
-        printRow("Email",        email,                     W);
-        printRow("Phone",        phoneNumber,               W);
-        if (totalRatings > 0)
+        int W = 38;
+        System.out.println("\n╔" + "═".repeat(W) + "╗");
+        System.out.println("║" + center("DOCTOR PROFILE", W) + "║");
+        System.out.println("╠" + "═".repeat(W) + "╣");
+        printRow("Doctor ID",      userId,                     W);
+        printRow("Name",           "Dr. " + name,              W);
+        printRow("Specialization", specialization,             W);
+        printRow("License",        licenseNumber,              W);
+        printRow("Experience",     experienceYears + " years", W);
+        printRow("Fee",            "Rs. " + consultationFee,  W);
+        printRow("Email",          email,                      W);
+        printRow("Phone",          phoneNumber,                W);
+        if (totalRatings > 0) {
             printRow("Rating", String.format("%.1f/5.0 (%d reviews)", rating, totalRatings), W);
+        }
         printRow("Appointments", String.valueOf(appointments.size()), W);
-        System.out.println("╚" + "═".repeat(W + 2) + "╝\n");
+        System.out.println("╚" + "═".repeat(W) + "╝\n");
     }
 
     public static void printRow(String label, String value, int innerWidth) {
@@ -97,10 +112,12 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         if (v.length() > valueWidth) v = v.substring(0, valueWidth - 1) + "…";
         System.out.println("║" + prefix + padRight(v, valueWidth) + "║");
     }
+
     public static String padRight(String s, int width) {
         if (s.length() >= width) return s;
         return s + " ".repeat(width - s.length());
     }
+
     public static String center(String s, int width) {
         int pad = width - s.length();
         int left = pad / 2;
@@ -108,16 +125,14 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         return " ".repeat(left) + s + " ".repeat(right);
     }
 
-    //  Availability 
     public void setAvailability(LocalDate date, LocalTime startTime, LocalTime endTime) {
         String slotId = "SLOT" + System.currentTimeMillis();
         TimeSlot slot = new TimeSlot(slotId, date, startTime, endTime, this);
         availability.add(slot);
         System.out.println("✓ Availability set for " + date +
-                           " (" + startTime + " - " + endTime + ")");
+                " (" + startTime + " - " + endTime + ")");
     }
 
-    
     public void promptSetAvailability(Scanner scanner) {
         System.out.print("Enter date (DD-MM-YYYY): ");
         String dateStr = scanner.nextLine();
@@ -136,33 +151,51 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
 
     public ArrayList<TimeSlot> getAvailableSlots(LocalDate date) {
         ArrayList<TimeSlot> result = new ArrayList<>();
-        for (TimeSlot slot : availability)
-            if (slot.getDate().equals(date) && slot.isSlotAvailable())
+        for (TimeSlot slot : availability) {
+            if (slot.getDate().equals(date) && slot.isSlotAvailable()) {
                 result.add(slot);
+            }
+        }
         return result;
     }
 
-    //  Appointments 
     public void viewAppointments(String status) {
         ArrayList<Appointment> list = new ArrayList<>();
         if (status.equalsIgnoreCase("ALL")) {
             list = appointments;
         } else {
-            for (Appointment a : appointments)
+            for (Appointment a : appointments) {
                 if (a.getStatus().equalsIgnoreCase(status)) list.add(a);
+            }
         }
-        if (list.isEmpty()) { System.out.println("\n✗ No " + status + " appointments."); return; }
+        if (list.isEmpty()) {
+            System.out.println("\n✗ No " + status + " appointments.");
+            return;
+        }
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║  " + padRight(status.toUpperCase() + " APPOINTMENTS", 37) + "║");
         System.out.println("╚════════════════════════════════════════╝");
-        for (int i = 0; i < list.size(); i++) { System.out.println("\n" + (i + 1) + "."); list.get(i).displayAppointmentDetails(); }
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println("\n" + (i + 1) + ".");
+            list.get(i).displayAppointmentDetails();
+        }
     }
-    public void viewAppointments() { viewAppointments("ALL"); }
 
-    public void addAppointment(Appointment a)  { this.appointments.add(a); }
+    public void viewAppointments() {
+        viewAppointments("ALL");
+    }
+
+    public void addAppointment(Appointment a) {
+        this.appointments.add(a);
+    }
+
     public void cancelAppointment(String id) {
-        for (Appointment a : appointments)
-            if (a.getAppointmentId().equals(id)) { a.cancelAppointment("Cancelled by doctor"); return; }
+        for (Appointment a : appointments) {
+            if (a.getAppointmentId().equals(id)) {
+                a.cancelAppointment("Cancelled by doctor");
+                return;
+            }
+        }
         System.out.println("\n✗ Appointment not found.");
     }
 
@@ -171,11 +204,10 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         String mode = appointment.getConsultationMode();
 
         System.out.println("\n╔════════════════════════════════════════╗");
-        System.out.println("║   CONSULTATION SESSION - " +
-                           padRight(mode, 14) + "║");
+        System.out.println("║   CONSULTATION SESSION - " + padRight(mode, 14) + "║");
         System.out.println("╠════════════════════════════════════════╣");
-        printRow("Patient", patient.getName(),    38);
-        printRow("Doctor",  "Dr. " + name,        38);
+        printRow("Patient", patient.getName(), 38);
+        printRow("Doctor", "Dr. " + name, 38);
         String sym = appointment.getSymptoms();
         printRow("Symptoms", sym.length() > 28 ? sym.substring(0, 27) + "…" : sym, 38);
         System.out.println("╚════════════════════════════════════════╝\n");
@@ -200,22 +232,22 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         printSessionHeader("VIDEO", appointment.getPatient().getName());
         showPreviousMessages(appointment);
         appointment.addConsultationMessage(
-            new Message(name, "DOCTOR", "[Doctor initiated video consultation session]", "VIDEO"));
+                new Message(name, "DOCTOR", "[Doctor initiated video consultation session]", "VIDEO"));
         System.out.println("✓ Video consultation session started\n");
         collectDoctorMessages(appointment, "VIDEO", scanner);
         appointment.addConsultationMessage(
-            new Message(name, "DOCTOR", "[Doctor ended video consultation session]", "VIDEO"));
+                new Message(name, "DOCTOR", "[Doctor ended video consultation session]", "VIDEO"));
     }
 
     private void runPhoneConsultation(Appointment appointment, Scanner scanner) {
         printSessionHeader("PHONE", appointment.getPatient().getName());
         showPreviousMessages(appointment);
         appointment.addConsultationMessage(
-            new Message(name, "DOCTOR", "[Doctor initiated phone consultation]", "PHONE"));
+                new Message(name, "DOCTOR", "[Doctor initiated phone consultation]", "PHONE"));
         System.out.println("✓ Phone consultation session started\n");
         collectDoctorMessages(appointment, "PHONE", scanner);
         appointment.addConsultationMessage(
-            new Message(name, "DOCTOR", "[Doctor ended phone consultation]", "PHONE"));
+                new Message(name, "DOCTOR", "[Doctor ended phone consultation]", "PHONE"));
     }
 
     private void printSessionHeader(String mode, String patientName) {
@@ -228,7 +260,9 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
     private void showPreviousMessages(Appointment appointment) {
         if (!appointment.getConsultationMessages().isEmpty()) {
             System.out.println("--- Previous Messages ---");
-            for (Message m : appointment.getConsultationMessages()) m.displayMessage();
+            for (Message m : appointment.getConsultationMessages()) {
+                m.displayMessage();
+            }
             System.out.println("--- New Messages ---\n");
         }
     }
@@ -244,9 +278,11 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         }
     }
 
-    // Prescription
-    public void issuePrescription(Patient patient, String diagnosis,
-                                  ArrayList<Medicine> medicines, String notes) {
+    public void issuePrescription(
+            Patient patient,
+            String diagnosis,
+            ArrayList<Medicine> medicines,
+            String notes) {
         String id = "PRE" + System.currentTimeMillis();
         Prescription prescription = new Prescription(id, patient, this, diagnosis, medicines, notes);
         if (patient != null) patient.addPrescription(prescription);
@@ -260,10 +296,17 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         String patientId = scanner.nextLine().trim();
 
         Patient selectedPatient = null;
-        for (Patient p : patients)
-            if (p.getUserId().equals(patientId)) { selectedPatient = p; break; }
+        for (Patient p : patients) {
+            if (p.getUserId().equals(patientId)) {
+                selectedPatient = p;
+                break;
+            }
+        }
 
-        if (selectedPatient == null) { System.out.println("✗ Patient not found."); return; }
+        if (selectedPatient == null) {
+            System.out.println("✗ Patient not found.");
+            return;
+        }
 
         System.out.print("Diagnosis: ");
         String diagnosis = scanner.nextLine().trim();
@@ -273,14 +316,21 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
             System.out.print("\nMedicine name (or 'done' to finish): ");
             String mName = scanner.nextLine().trim();
             if (mName.equalsIgnoreCase("done")) break;
-            System.out.print("Dosage: ");      String dosage  = scanner.nextLine().trim();
-            System.out.print("Frequency: ");   String freq    = scanner.nextLine().trim();
+            System.out.print("Dosage: ");
+            String dosage = scanner.nextLine().trim();
+            System.out.print("Frequency: ");
+            String freq = scanner.nextLine().trim();
             System.out.print("Duration (days): ");
             String durStr = scanner.nextLine().trim();
             int dur;
-            try { dur = Integer.parseInt(durStr); }
-            catch (NumberFormatException e) { System.out.println("✗ Invalid duration — medicine skipped."); continue; }
-            System.out.print("Instructions: "); String instr  = scanner.nextLine().trim();
+            try {
+                dur = Integer.parseInt(durStr);
+            } catch (NumberFormatException e) {
+                System.out.println("✗ Invalid duration — medicine skipped.");
+                continue;
+            }
+            System.out.print("Instructions: ");
+            String instr = scanner.nextLine().trim();
             try {
                 medicines.add(new Medicine(mName, dosage, freq, dur, instr));
                 System.out.println("✓ Medicine added.");
@@ -300,12 +350,15 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
             if (!issuedPrescriptions.contains(p)) issuedPrescriptions.add(p);
         }
     }
+
     public void removeIssuedPrescription(Prescription p) {
         if (p != null && issuedPrescriptions != null) issuedPrescriptions.remove(p);
     }
+
     public void viewIssuedPrescriptions() {
         if (issuedPrescriptions == null || issuedPrescriptions.isEmpty()) {
-            System.out.println("\n✗ No prescriptions issued."); return;
+            System.out.println("\n✗ No prescriptions issued.");
+            return;
         }
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║      PRESCRIBED BY YOU                 ║");
@@ -326,28 +379,61 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
     }
 
     public void addRating(double r) {
-        if (r < 0 || r > 5) { System.out.println("Rating must be between 0 and 5."); return; }
+        if (r < 0 || r > 5) {
+            System.out.println("Rating must be between 0 and 5.");
+            return;
+        }
         rating = (rating * totalRatings + r) / ++totalRatings;
     }
 
-    // Getters / Setters 
-    public String getSpecialization()  { return specialization; }
-    public void setSpecialization(String s) { validateSpecialization(s); this.specialization = s.trim(); }
+    public String getSpecialization() { 
+        return specialization; 
+    }
+    public void setSpecialization(String s) { 
+        validateSpecialization(s); 
+        this.specialization = s.trim(); 
+    }
 
-    public String getLicenseNumber()   { return licenseNumber; }
-    public void setLicenseNumber(String l) { validateLicenseNumber(l); this.licenseNumber = l.trim().toUpperCase(); }
+    public String getLicenseNumber() {
+        return licenseNumber; 
+    }
+    public void setLicenseNumber(String l) { 
+        validateLicenseNumber(l); 
+        this.licenseNumber = l.trim().toUpperCase(); 
+    }
 
-    public int getExperienceYears()    { return experienceYears; }
-    public void setExperienceYears(int y) { validateExperienceYears(y); this.experienceYears = y; }
+    public int getExperienceYears() { 
+        return experienceYears; 
+    }
+    public void setExperienceYears(int y) { 
+        validateExperienceYears(y); 
+        this.experienceYears = y; 
+    }
 
-    public double getConsultationFee() { return consultationFee; }
-    public void setConsultationFee(double f) { validateConsultationFee(f); this.consultationFee = f; }
+    public double getConsultationFee() { 
+        return consultationFee; 
+    }
+    public void setConsultationFee(double f) { 
+        validateConsultationFee(f); 
+        this.consultationFee = f; 
+    }
 
-    public double getRating()          { return rating; }
-    public int getTotalRatings()       { return totalRatings; }
-    public ArrayList<Appointment> getAppointments()       { return appointments; }
-    public ArrayList<TimeSlot> getAvailability()          { return availability; }
-    public ArrayList<Prescription> getIssuedPrescriptions() { return issuedPrescriptions; }
+    public double getRating() { 
+        return rating; 
+    }
+    public int getTotalRatings() { 
+        return totalRatings; 
+    }
+
+    public ArrayList<Appointment> getAppointments() { 
+        return appointments; 
+    }
+    public ArrayList<TimeSlot> getAvailability() { 
+        return availability; 
+    }
+    public ArrayList<Prescription> getIssuedPrescriptions() { 
+        return issuedPrescriptions; 
+    }
 
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
