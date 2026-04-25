@@ -6,13 +6,6 @@ import java.util.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
-/**
- * Main controller for the Telemedicine & Remote Consultation System.
- * Manages menu-driven user interface and system operations.
- * 
- * @author Telemedicine Team
- * @version 1.0
- */
 public class TelemedicineSystem {
     // Data storage
     private ArrayList<Patient> patients;
@@ -37,7 +30,6 @@ public class TelemedicineSystem {
         this.currentUser = null;
         this.currentUserType = null;
         
-        // Load existing data
         loadAllData();
         
         // Add sample data if empty
@@ -46,8 +38,7 @@ public class TelemedicineSystem {
         }
     }
     
-    // ==================== MAIN MENU ====================
-    
+    // MAIN MENU 
     public void start() {
         while (true) {
             try {
@@ -100,7 +91,7 @@ public class TelemedicineSystem {
         System.out.println("╚════════════════════════════════════════╝\n");
     }
     
-    // ==================== PATIENT OPERATIONS ====================
+    // PATIENT OPERATIONS 
     
     private void patientLogin() {
         clearScreen();
@@ -371,7 +362,6 @@ public class TelemedicineSystem {
             return;
         }
         
-        // Show available time slots
         ArrayList<TimeSlot> availableSlots = 
             selectedDoctor.getAvailableSlots(appointmentDate);
         
@@ -398,11 +388,9 @@ public class TelemedicineSystem {
         
         TimeSlot selectedSlot = availableSlots.get(slotChoice - 1);
         
-        // Get symptoms
         System.out.print("Describe your symptoms: ");
         String symptoms = scanner.nextLine().trim();
         
-        // Select consultation mode
         System.out.println("\nConsultation Mode:");
         System.out.println("1. Video Call");
         System.out.println("2. Phone Call");
@@ -465,7 +453,7 @@ public class TelemedicineSystem {
         pauseScreen();
     }
     
-    // ==================== DOCTOR OPERATIONS ====================
+    // DOCTOR OPERATIONS 
     
     private void doctorLogin() {
         clearScreen();
@@ -640,9 +628,6 @@ public class TelemedicineSystem {
         pauseScreen();
     }
     
-    /**
-     * View consultation chat for a patient and allow them to reply to doctor's messages.
-     */
     private void viewConsultationChat(Patient patient) {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
@@ -680,9 +665,6 @@ public class TelemedicineSystem {
         respondToChat(patient, selectedAppointment);
     }
     
-    /**
-     * Allow patient to view and respond to doctor's messages in a chat.
-     */
     private void respondToChat(Patient patient, Appointment appointment) {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
@@ -726,10 +708,6 @@ public class TelemedicineSystem {
         pauseScreen();
     }
     
-    /**
-     * Run an interactive consultation session based on the consultation mode.
-     * Supports VIDEO, PHONE, and CHAT with message exchange.
-     */
     private void runConsultationSession(Appointment appointment, Doctor doctor) {
         clearScreen();
         Patient patient = appointment.getPatient();
@@ -767,11 +745,6 @@ public class TelemedicineSystem {
         pauseScreen();
     }
     
-    /**
-     * Run an asynchronous CHAT mode consultation.
-     * Doctor sends one or more messages that are saved.
-     * Patient can reply when they log in.
-     */
     private void runChatSession(Appointment appointment, Doctor doctor, Patient patient) {
         System.out.println("\n═══════════════════════════════════════════");
         System.out.println("        APPOINTMENT MESSAGING (CHAT)");
@@ -809,11 +782,6 @@ public class TelemedicineSystem {
         }
     }
     
-    /**
-     * Run an asynchronous VIDEO mode consultation.
-     * Doctor sends one or more messages that are saved.
-     * Patient can reply when they log in.
-     */
     private void runVideoConsultation(Appointment appointment, Doctor doctor, Patient patient) {
         System.out.println("\n═══════════════════════════════════════════");
         System.out.println("        APPOINTMENT MESSAGING (VIDEO)");
@@ -859,12 +827,7 @@ public class TelemedicineSystem {
             System.out.println("✓ Message saved\n");
         }
     }
-    
-    /**
-     * Run an asynchronous PHONE mode consultation.
-     * Doctor sends one or more messages that are saved.
-     * Patient can reply when they log in.
-     */
+   
     private void runPhoneConsultation(Appointment appointment, Doctor doctor, Patient patient) {
         System.out.println("\n═══════════════════════════════════════════");
         System.out.println("        APPOINTMENT MESSAGING (PHONE)");
@@ -911,9 +874,6 @@ public class TelemedicineSystem {
         }
     }
     
-    /**
-     * Allow doctor to view patient responses to sent messages.
-     */
     private void viewPatientResponses(Doctor doctor) {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
@@ -967,9 +927,6 @@ public class TelemedicineSystem {
         displayConsultationChat(doctor, selectedAppointment);
     }
     
-    /**
-     * Display the full consultation chat for a doctor to review.
-     */
     private void displayConsultationChat(Doctor doctor, Appointment appointment) {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
@@ -1045,7 +1002,7 @@ public class TelemedicineSystem {
         pauseScreen();
     }
     
-    // ==================== ADMIN OPERATIONS ====================
+    // ADMIN OPERATIONS 
     
     private void adminLogin() {
         clearScreen();
@@ -1176,10 +1133,6 @@ public class TelemedicineSystem {
         }
     }
     
-    /**
-     * Remove a doctor from the system with cascade delete for prescriptions and appointments.
-     * Issue #2 & #7: Prescription tracking and cascade delete
-     */
     private void removeDoctor(Admin admin) {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
@@ -1229,10 +1182,6 @@ public class TelemedicineSystem {
         pauseScreen();
     }
     
-    /**
-     * Remove a patient from the system with cascade delete for prescriptions and appointments.
-     * Issue #2 & #7: Prescription tracking and cascade delete
-     */
     private void removePatient(Admin admin) {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
@@ -1282,7 +1231,7 @@ public class TelemedicineSystem {
         pauseScreen();
     }
     
-    // ==================== UTILITY METHODS ====================
+    // UTILITY METHODS 
     
     private int getIntInput(String prompt) {
         while (true) {
@@ -1321,7 +1270,7 @@ public class TelemedicineSystem {
         scanner.nextLine();
     }
     
-    // ==================== FILE OPERATIONS ====================
+    // FILE OPERATIONS 
     
     private void saveAllData() {
         System.out.println("\nSaving data...");
@@ -1369,7 +1318,7 @@ public class TelemedicineSystem {
         }
     }
     
-    // ==================== SAMPLE DATA ====================
+    // SAMPLE DATA 
     
     private void addSampleData() {
         // Sample Doctors

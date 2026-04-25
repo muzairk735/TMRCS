@@ -4,17 +4,9 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-/**
- * Represents a medical prescription issued by a doctor.
- * Contains prescription details and list of medicines.
- * 
- * @author Telemedicine Team
- * @version 1.0
- */
 public class Prescription implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    // Attributes
     private String prescriptionId;
     private Patient patient;
     private Doctor doctor;
@@ -23,7 +15,6 @@ public class Prescription implements Serializable {
     private ArrayList<Medicine> medicines;
     private String additionalNotes;
     
-    // Constructor
     public Prescription(String prescriptionId, Patient patient, Doctor doctor,
                        String diagnosis, ArrayList<Medicine> medicines,
                        String additionalNotes) {
@@ -36,7 +27,6 @@ public class Prescription implements Serializable {
         this.additionalNotes = additionalNotes;
     }
     
-    // Methods
     public void addMedicine(Medicine medicine) {
         if (medicine != null) {
             this.medicines.add(medicine);
@@ -98,7 +88,6 @@ public class Prescription implements Serializable {
         System.out.println("═══════════════════════════════════════════\n");
     }
     
-    // Getters and Setters
     public String getPrescriptionId() { 
         return prescriptionId; 
     }

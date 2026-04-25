@@ -3,18 +3,9 @@ package com.telemedicine.models;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
- * Represents an Administrator in the Telemedicine System.
- * Extends Person and adds admin-specific attributes and methods.
- * 
- * @author Telemedicine Team
- * @version 1.0
- */
 public class Admin extends Person implements Serializable {
     private static final long serialVersionUID = 1L;
-    
-    // Admin-specific attributes
-    private String adminLevel; // super_admin, admin
+    private String adminLevel; 
     
     // Constructor
     public Admin(String userId, String name, String email, 
@@ -47,11 +38,7 @@ public class Admin extends Person implements Serializable {
         doctorList.add(doctor);
         System.out.println("✓ Doctor " + doctor.getName() + " added successfully.");
     }
-    
-    /**
-     * Remove a patient and cascade delete all their prescriptions.
-     * Issue #7: Cascade delete logic
-     */
+   
     public void removePatient(ArrayList<Patient> patientList, String patientId) {
         Patient patientToRemove = patientList.stream()
             .filter(p -> p.getUserId().equals(patientId))
@@ -63,7 +50,7 @@ public class Admin extends Person implements Serializable {
             return;
         }
         
-        // Issue #7: Cascade delete - remove all prescriptions for this patient
+        
         patientToRemove.getPrescriptions().forEach(prescription -> {
             Doctor doctor = prescription.getDoctor();
             if (doctor != null) {
@@ -87,8 +74,7 @@ public class Admin extends Person implements Serializable {
             return;
         }
         
-        // Issue #7: Cascade delete - remove all prescriptions issued by this doctor
-        // This prevents orphaned prescription data
+        
         doctorToRemove.getIssuedPrescriptions().forEach(prescription -> {
             Patient patient = prescription.getPatient();
             if (patient != null) {
@@ -141,7 +127,6 @@ public class Admin extends Person implements Serializable {
         System.out.println("╚════════════════════════════════════════╝\n");
     }
     
-    // Getters
     public String getAdminLevel() { 
         return adminLevel; 
     }

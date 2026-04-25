@@ -5,13 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-/**
- * Represents a consultation appointment in the Telemedicine System.
- * Contains references to Patient, Doctor, and Prescription information.
- * 
- * @author Telemedicine Team
- * @version 1.0
- */
+
 public class Appointment implements Serializable {
     private static final long serialVersionUID = 1L;
     
@@ -57,8 +51,6 @@ public class Appointment implements Serializable {
         if (!status.equals("COMPLETED")) {
             this.status = "CANCELLED";
             
-            // Issue #7: Cascade delete - Remove orphaned prescription if appointment cancelled before completion
-            // Only remove if prescription exists and appointment wasn't completed
             if (this.prescription != null) {
                 if (patient != null) {
                     patient.removePrescription(this.prescription);
@@ -101,7 +93,6 @@ public class Appointment implements Serializable {
                appointmentDateTime.isAfter(now);
     }
     
-    // Getters and Setters
     public String getAppointmentId() { 
         return appointmentId; 
     }
@@ -141,8 +132,6 @@ public class Appointment implements Serializable {
     public void setPrescription(Prescription prescription) {
         this.prescription = prescription;
         
-        // Issue #2: Ensure bidirectional consistency
-        // Add prescription to patient and doctor lists
         if (prescription != null) {
             if (patient != null) {
                 patient.addPrescription(prescription);
@@ -157,26 +146,17 @@ public class Appointment implements Serializable {
         return createdAt; 
     }
     
-    /**
-     * Add a message to the consultation session.
-     * Supports chat history tracking for all consultation modes.
-     */
     public void addConsultationMessage(Message message) {
         if (message != null) {
             this.consultationMessages.add(message);
         }
     }
     
-    /**
-     * Get all messages in the consultation session.
-     */
+
     public ArrayList<Message> getConsultationMessages() {
         return consultationMessages;
     }
     
-    /**
-     * Display all consultation messages (chat history).
-     */
     public void displayConsultationHistory() {
         if (consultationMessages.isEmpty()) {
             System.out.println("\n✗ No consultation messages recorded.");
@@ -192,14 +172,10 @@ public class Appointment implements Serializable {
         }
     }
     
-    /**
-     * Custom deserialization to handle old serialized objects without messages.
-     */
     private void readObject(java.io.ObjectInputStream ois) 
             throws java.io.IOException, ClassNotFoundException {
         ois.defaultReadObject();
         
-        // Initialize consultationMessages if it's null (from old serialized objects)
         if (this.consultationMessages == null) {
             this.consultationMessages = new ArrayList<>();
         }

@@ -4,13 +4,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-/**
- * Represents a medical record for a patient.
- * Contains patient's medical history, diagnosis, and treatment information.
- * 
- * @author Telemedicine Team
- * @version 1.0
- */
 public class MedicalRecord implements Serializable {
     private static final long serialVersionUID = 1L;
     
@@ -37,7 +30,6 @@ public class MedicalRecord implements Serializable {
         this.notes = "";
     }
     
-    // Methods
     public void displayRecord() {
         System.out.println("  Record ID: " + recordId);
         System.out.println("  Date: " + recordDate);
@@ -91,7 +83,6 @@ public class MedicalRecord implements Serializable {
         System.out.println("╚════════════════════════════════════════╝\n");
     }
     
-    // Getters and Setters
     public String getRecordId() { 
         return recordId; 
     }

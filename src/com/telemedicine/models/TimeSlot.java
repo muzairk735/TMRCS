@@ -5,13 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
-/**
- * Represents a time slot for doctor availability.
- * Manages booking and availability status of appointment slots.
- * 
- * @author Telemedicine Team
- * @version 1.0
- */
 public class TimeSlot implements Serializable {
     private static final long serialVersionUID = 1L;
     
@@ -23,7 +16,6 @@ public class TimeSlot implements Serializable {
     private boolean isAvailable;
     private Doctor doctor;
     
-    // Constructor
     public TimeSlot(String slotId, LocalDate date, LocalTime startTime,
                    LocalTime endTime, Doctor doctor) {
         this.slotId = slotId;
@@ -34,7 +26,6 @@ public class TimeSlot implements Serializable {
         this.doctor = doctor;
     }
     
-    // Methods
     public void markAsBooked() {
         this.isAvailable = false;
     }
@@ -44,7 +35,6 @@ public class TimeSlot implements Serializable {
     }
     
     public boolean isSlotAvailable() {
-        // Check if slot is in the future
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
         
@@ -64,7 +54,6 @@ public class TimeSlot implements Serializable {
             return false;
         }
         
-        // Check time overlap
         return !(this.endTime.isBefore(otherSlot.startTime) || 
                 this.startTime.isAfter(otherSlot.endTime));
     }
@@ -79,7 +68,6 @@ public class TimeSlot implements Serializable {
                          " | Status: " + (isAvailable ? "Available" : "Booked"));
     }
     
-    // Getters
     public String getSlotId() { 
         return slotId; 
     }

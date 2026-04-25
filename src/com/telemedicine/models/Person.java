@@ -3,14 +3,6 @@ package com.telemedicine.models;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-/**
- * Abstract base class for all users in the Telemedicine System.
- * Provides common attributes and methods for Patient, Doctor, and Admin.
- * 
- * @author Telemedicine Team
- * @version 1.0
- * @since 2026-04-06
- */
 public abstract class Person implements Serializable, UserInterface {
     private static final long serialVersionUID = 1L;
     
@@ -33,10 +25,8 @@ public abstract class Person implements Serializable, UserInterface {
         this.registrationDate = LocalDate.now();
     }
     
-    // Abstract method - must be implemented by subclasses
     public abstract void displayProfile();
     
-    // Concrete method - shared by all subclasses
     public boolean login(String email, String password) {
         return this.email.equals(email) && this.password.equals(password);
     }
@@ -57,7 +47,6 @@ public abstract class Person implements Serializable, UserInterface {
         this.phoneNumber = phone;
     }
     
-    // Getters and Setters
     public String getUserId() { 
         return userId; 
     }

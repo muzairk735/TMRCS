@@ -5,27 +5,19 @@ import java.io.ObjectInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
-/**
- * Represents a Patient in the Telemedicine System.
- * Extends Person and adds patient-specific attributes and methods.
- * 
- * @author Telemedicine Team
- * @version 1.0
- */
+ 
 public class Patient extends Person implements Serializable, AppointmentViewerInterface {
     private static final long serialVersionUID = 1L;
     
-    // Patient-specific attributes
     private int age;
     private String gender;
     private String bloodGroup;
     private String address;
     private ArrayList<MedicalRecord> medicalHistory;
     private ArrayList<Appointment> appointments;
-    private ArrayList<Prescription> prescriptions;  // Issue #2: Direct prescription tracking
+    private ArrayList<Prescription> prescriptions;
     
-    // Constructor
+    
     public Patient(String userId, String name, String email, 
                    String phoneNumber, String password,
                    int age, String gender, String bloodGroup, String address) {
@@ -58,7 +50,6 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         System.out.println("╚════════════════════════════════════════╝\n");
     }
     
-    // Patient-specific methods
     public void bookAppointment(Doctor doctor, LocalDateTime dateTime, 
                                 String symptoms, String mode) {
         String appointmentId = "APT" + System.currentTimeMillis();
@@ -147,10 +138,6 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         this.medicalHistory.add(record);
     }
     
-    /**
-     * Add a prescription to the patient's prescription list.
-     * Issue #2: Direct prescription tracking
-     */
     public void addPrescription(Prescription prescription) {
         if (prescription != null) {
             // Initialize if null (safety check for deserialized objects)
@@ -163,20 +150,12 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         }
     }
     
-    /**
-     * Remove a prescription from the patient's prescription list.
-     * Issue #2: Direct prescription tracking
-     */
     public void removePrescription(Prescription prescription) {
         if (prescription != null && this.prescriptions != null) {
             this.prescriptions.remove(prescription);
         }
     }
     
-    /**
-     * View all prescriptions for this patient.
-     * Issue #2: Direct prescription tracking
-     */
     public void viewPrescriptions() {
         if (this.prescriptions == null || this.prescriptions.isEmpty()) {
             System.out.println("\n✗ No prescriptions found.");
@@ -193,7 +172,6 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         }
     }
     
-    // Getters and Setters
     public int getAge() { 
         return age; 
     }
@@ -230,14 +208,10 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         return prescriptions; 
     }
     
-    /**
-     * Custom deserialization to handle old serialized objects.
-     * Issue #2: Ensures prescriptions list is initialized for deserialized objects.
-     */
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         
-        // Initialize prescriptions if it's null (from old serialized objects)
+        
         if (this.prescriptions == null) {
             this.prescriptions = new ArrayList<>();
         }

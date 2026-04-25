@@ -7,24 +7,16 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
-/**
- * Represents a Doctor in the Telemedicine System.
- * Extends Person and adds doctor-specific attributes and methods.
- * 
- * @author Telemedicine Team
- * @version 1.0
- */
 public class Doctor extends Person implements Serializable, AppointmentViewerInterface {
     private static final long serialVersionUID = 1L;
     
-    // Doctor-specific attributes
     private String specialization;
     private String licenseNumber;
     private int experienceYears;
     private double consultationFee;
     private ArrayList<TimeSlot> availability;
     private ArrayList<Appointment> appointments;
-    private ArrayList<Prescription> issuedPrescriptions;  // Issue #2: Direct prescription tracking
+    private ArrayList<Prescription> issuedPrescriptions; 
     private double rating;
     private int totalRatings;
     
@@ -67,7 +59,6 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         System.out.println("╚════════════════════════════════════════╝\n");
     }
     
-    // Set availability for a date range
     public void setAvailability(LocalDate date, LocalTime startTime, 
                                LocalTime endTime) {
         String slotId = "SLOT" + System.currentTimeMillis();
@@ -76,7 +67,6 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         System.out.println("✓ Availability set for " + date + " (" + startTime + " - " + endTime + ")");
     }
     
-    // Get available slots for a specific date
     public ArrayList<TimeSlot> getAvailableSlots(LocalDate date) {
         ArrayList<TimeSlot> availableSlots = new ArrayList<>();
         for (TimeSlot slot : availability) {
@@ -87,7 +77,6 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         return availableSlots;
     }
     
-    // View appointments by status
     public void viewAppointments(String status) {
         ArrayList<Appointment> filteredAppointments = new ArrayList<>();
         
@@ -121,7 +110,6 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         viewAppointments("ALL");
     }
     
-    // Cancel appointment
     public void cancelAppointment(String appointmentId) {
         for (Appointment apt : appointments) {
             if (apt.getAppointmentId().equals(appointmentId)) {
@@ -132,7 +120,6 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         System.out.println("\n✗ Appointment not found.");
     }
     
-    // Conduct consultation
     public void conductConsultation(Appointment appointment) {
         if (appointment.getStatus().equals("PENDING") || 
             appointment.getStatus().equals("CONFIRMED")) {
@@ -144,7 +131,6 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         }
     }
     
-    // Issue prescription
     public void issuePrescription(Patient patient, String diagnosis, 
                                  ArrayList<Medicine> medicines, 
                                  String notes) {
@@ -153,7 +139,6 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
             prescriptionId, patient, this, diagnosis, medicines, notes
         );
         
-        // Issue #2: Add prescription to both patient and doctor lists
         if (patient != null) {
             patient.addPrescription(prescription);
         }
@@ -163,13 +148,8 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         prescription.displayPrescription();
     }
     
-    /**
-     * Add a prescription to the doctor's issued prescriptions list.
-     * Issue #2: Direct prescription tracking
-     */
     public void addIssuedPrescription(Prescription prescription) {
         if (prescription != null) {
-            // Initialize if null (safety check for deserialized objects)
             if (this.issuedPrescriptions == null) {
                 this.issuedPrescriptions = new ArrayList<>();
             }
@@ -179,20 +159,12 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         }
     }
     
-    /**
-     * Remove a prescription from the doctor's issued prescriptions list.
-     * Issue #2: Direct prescription tracking
-     */
     public void removeIssuedPrescription(Prescription prescription) {
         if (prescription != null && this.issuedPrescriptions != null) {
             this.issuedPrescriptions.remove(prescription);
         }
     }
     
-    /**
-     * View all prescriptions issued by this doctor.
-     * Issue #2: Direct prescription tracking
-     */
     public void viewIssuedPrescriptions() {
         if (this.issuedPrescriptions == null || this.issuedPrescriptions.isEmpty()) {
             System.out.println("\n✗ No prescriptions issued.");
@@ -213,7 +185,6 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         this.appointments.add(appointment);
     }
     
-    // Update rating
     public void addRating(double newRating) {
         if (newRating < 0 || newRating > 5) {
             System.out.println("Rating must be between 0 and 5.");
@@ -224,7 +195,6 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         rating = (totalScore + newRating) / totalRatings;
     }
     
-    // Getters
     public String getSpecialization() { 
         return specialization; 
     }
@@ -265,14 +235,9 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         return issuedPrescriptions; 
     }
     
-    /**
-     * Custom deserialization to handle old serialized objects.
-     * Issue #2: Ensures issuedPrescriptions list is initialized for deserialized objects.
-     */
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         
-        // Initialize issuedPrescriptions if it's null (from old serialized objects)
         if (this.issuedPrescriptions == null) {
             this.issuedPrescriptions = new ArrayList<>();
         }
