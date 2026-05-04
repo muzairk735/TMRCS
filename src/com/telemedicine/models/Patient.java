@@ -7,10 +7,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-// Represents a registered patient — can book appointments, chat with doctors, and view records
+/**
+ * Represents a patient in the telemedicine system.
+ * Inherits common user fields from Person (inheritance).
+ * Implements AppointmentViewerInterface to view/cancel appointments (abstraction).
+ */
 public class Patient extends Person implements Serializable, AppointmentViewerInterface {
     private static final long serialVersionUID = 1L;
 
+    // Accepted blood group values
     private static final String[] VALID_BLOOD_GROUPS =
             {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
 
@@ -18,16 +23,20 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
     private String gender;
     private String bloodGroup;
     private String address;
+
+    // Patient-specific records — stored as lists for multiple entries
     private ArrayList<MedicalRecord> medicalHistory;
     private ArrayList<Appointment>   appointments;
     private ArrayList<Prescription>  prescriptions;
 
-    // --- Validators --- //
+    // --- Input validation helpers ---
 
     private static void validateAge(int age) {
-        if (age < 0 || age > 150)
+        if (age < 0 || age > 150) {
             throw new IllegalArgumentException("Age must be between 0 and 150.");
         }
+    }
+
     private static void validateGender(String gender) {
         if (gender == null || gender.trim().isEmpty())
             throw new IllegalArgumentException("Gender cannot be empty.");
@@ -50,6 +59,10 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         }
     }
 
+    /**
+     * Constructs a Patient by calling the parent Person constructor first,
+     * then validating and setting patient-specific fields.
+     */
     public Patient(
             String userId,
             String name,
@@ -60,7 +73,7 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
             String gender,
             String bloodGroup,
             String address) {
-        super(userId, name, email, phoneNumber, password);
+        super(userId, name, email, phoneNumber, password); // call Person constructor
         validateAge(age);
         validateGender(gender);
         validateBloodGroup(bloodGroup);
@@ -74,6 +87,10 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         this.prescriptions  = new ArrayList<>();
     }
 
+    /**
+     * Displays the patient's profile in a formatted box.
+     * Overrides the abstract displayProfile() from Person — polymorphism.
+     */
     @Override
     public void displayProfile() {
         int W = 38;
@@ -93,12 +110,15 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         System.out.println("╚" + "═".repeat(W) + "╝\n");
     }
 
-    // Creates the appointment, links it to both patient and doctor, then shows a summary
+    /**
+     * Books a new appointment with the given doctor and adds it to both
+     * the patient's and doctor's appointment lists.
+     */
     public void bookAppointment(Doctor doctor, LocalDateTime dateTime, String symptoms, String mode) {
-        String id = "APT" + System.currentTimeMillis();
+        String id = "APT" + System.currentTimeMillis(); // unique ID based on timestamp
         Appointment appt = new Appointment(id, this, doctor, dateTime, symptoms, mode);
         this.appointments.add(appt);
-        doctor.addAppointment(appt);
+        doctor.addAppointment(appt); // register with the doctor too
         System.out.println("\n✓ Appointment booked successfully!");
         System.out.println("  Appointment ID: " + id);
         System.out.println("  Doctor: Dr. " + doctor.getName());
@@ -106,7 +126,7 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         System.out.println("  Consultation Fee: Rs. " + doctor.getConsultationFee());
     }
 
-    // Shows all appointments regardless of status
+    /** Shows all appointments — satisfies AppointmentViewerInterface */
     public void viewAppointments() {
         if (appointments.isEmpty()) {
             System.out.println("\n✗ No appointments found.");
@@ -121,7 +141,7 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         }
     }
 
-    // Filtered view — shows only appointments matching the given status
+    /** Filters and shows appointments by status (e.g., "PENDING", "CONFIRMED") */
     public void viewAppointments(String status) {
         ArrayList<Appointment> filtered = new ArrayList<>();
         for (Appointment a : appointments) {
@@ -140,6 +160,7 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         }
     }
 
+    /** Cancels the appointment matching the given ID */
     public void cancelAppointment(String appointmentId) {
         for (Appointment a : appointments) {
             if (a.getAppointmentId().equals(appointmentId)) {
@@ -150,7 +171,10 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         System.out.println("\n✗ Appointment not found.");
     }
 
-    // Lets the patient type replies into an active consultation thread
+    /**
+     * Lets the patient send replies in an existing consultation chat.
+     * Reads messages from the scanner until the user types 'done'.
+     */
     public void respondToChat(Appointment appointment, Scanner scanner) {
         int W = 38;
         System.out.println("\n╔" + "═".repeat(W) + "╗");
@@ -172,7 +196,7 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
             System.out.print(name + ": ");
             String msg = scanner.nextLine().trim();
             if (msg.equalsIgnoreCase("done")) break;
-            if (msg.isEmpty()) continue;
+            if (msg.isEmpty()) continue; // skip blank input
             appointment.addConsultationMessage(
                     new Message(name, "PATIENT", msg, appointment.getConsultationMode()));
             System.out.println("✓ Message sent\n");
@@ -180,6 +204,7 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         System.out.println("\n✓ Replies saved. Doctor will see them when they log in.");
     }
 
+    /** Displays all medical records on file for this patient */
     public void viewMedicalHistory() {
         if (medicalHistory.isEmpty()) {
             System.out.println("\n✗ No medical history available.");
@@ -194,11 +219,12 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         }
     }
 
+    /** Adds a medical record to the patient's history */
     public void addMedicalRecord(MedicalRecord r) {
         medicalHistory.add(r);
     }
 
-    // Guards against nulls and duplicate entries
+    /** Adds a prescription — avoids duplicates and null entries */
     public void addPrescription(Prescription p) {
         if (p != null) {
             if (prescriptions == null) prescriptions = new ArrayList<>();
@@ -210,6 +236,7 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         if (p != null && prescriptions != null) prescriptions.remove(p);
     }
 
+    /** Displays all prescriptions issued to this patient */
     public void viewPrescriptions() {
         if (prescriptions == null || prescriptions.isEmpty()) {
             System.out.println("\n✗ No prescriptions found.");
@@ -266,7 +293,10 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         return prescriptions; 
     }
 
-    // Null-guard for prescriptions when loading serialized data from older versions
+    /**
+     * Custom deserialization — ensures prescriptions list is never null
+     * after loading from a file (handles older serialized objects).
+     */
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         if (prescriptions == null) prescriptions = new ArrayList<>();

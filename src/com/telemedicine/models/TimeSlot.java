@@ -5,31 +5,40 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
-// A bookable time block on a doctor's calendar
+/**
+ * Represents one doctor's available appointment slot.
+ * Links time information with the related doctor object.
+ */
 public class TimeSlot implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    // Slot details
     private String    slotId;
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
     private boolean isAvailable;
-    private Doctor doctor; // the slot belongs to this doctor
+    private Doctor doctor;
 
-    // Constructor
-    public TimeSlot(String slotId, LocalDate date, LocalTime startTime,
-                   LocalTime endTime, Doctor doctor) {
+    /** Creates a time slot after validating date, time, and doctor. */
+    public TimeSlot(
+            String slotId,
+            LocalDate date,
+            LocalTime startTime,
+            LocalTime endTime,
+            Doctor doctor) {
+        // Basic slot validation
         if (date == null)
             throw new IllegalArgumentException("Slot date cannot be null.");
-        if (startTime == null || endTime == null)
+                if (startTime == null || endTime == null)
             throw new IllegalArgumentException("Start and end times cannot be null.");
-        if (!endTime.isAfter(startTime))
+                if (!endTime.isAfter(startTime))
             throw new IllegalArgumentException("End time must be after start time.");
-        if (ChronoUnit.MINUTES.between(startTime, endTime) < 15)
+                if (ChronoUnit.MINUTES.between(startTime, endTime) < 15)
             throw new IllegalArgumentException("Time slot must be at least 15 minutes long.");
-        if (doctor == null)
+                if (doctor == null)
             throw new IllegalArgumentException("TimeSlot must be associated with a doctor.");
-
+        
         this.slotId = slotId;
         this.date = date;
         this.startTime = startTime;
@@ -38,15 +47,17 @@ public class TimeSlot implements Serializable {
         this.doctor = doctor;
     }
 
+    // Marks the slot as taken
     public void markAsBooked() {
         this.isAvailable = false;
     }
 
+    // Makes the slot available again
     public void markAsAvailable() {
         this.isAvailable = true;
     }
 
-    // A slot is only truly available if it's in the future and not already booked
+    // Also checks past dates and times
     public boolean isSlotAvailable() {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
@@ -59,11 +70,10 @@ public class TimeSlot implements Serializable {
         if (date.equals(today) && startTime.isBefore(now)) {
             return false;
         }
-
         return isAvailable;
     }
 
-    // Checks for overlap with another slot on the same day
+    // Detects overlap with another slot
     public boolean isConflict(TimeSlot otherSlot) {
         if (!this.date.equals(otherSlot.date)) {
             return false;
@@ -72,10 +82,12 @@ public class TimeSlot implements Serializable {
                 this.startTime.isAfter(otherSlot.endTime));
     }
 
+    // Useful for display and validation
     public int getDurationInMinutes() {
         return (int) ChronoUnit.MINUTES.between(startTime, endTime);
     }
 
+    // Prints a simple slot summary
     public void displaySlotInfo() {
         System.out.println("  Slot: " + date + " | " + startTime +
                 " - " + endTime +

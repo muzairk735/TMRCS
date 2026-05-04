@@ -2,22 +2,28 @@ package com.telemedicine.models;
 
 import java.io.Serializable;
 
-// A single medicine entry inside a Prescription
+/**
+ * Represents one medicine entry inside a prescription.
+ * Keeps medicine details grouped in one object for better abstraction.
+ */
 public class Medicine implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    // Core medicine details
     private String medicineName;
     private String dosage;       // e.g. "500mg"
     private String frequency;   // e.g. "Twice daily"
     private int durationDays;
     private String instructions; // e.g. "Take after meals"
 
+    /** Creates a medicine with basic validation. */
     public Medicine(
             String medicineName,
             String dosage,
             String frequency,
             int durationDays,
             String instructions) {
+        // Validate required fields
         if (medicineName == null || medicineName.trim().isEmpty()) {
             throw new IllegalArgumentException("Medicine name cannot be empty.");
         }
@@ -37,7 +43,7 @@ public class Medicine implements Serializable {
         this.instructions = (instructions != null) ? instructions.trim() : "";
     }
 
-    // Verbose display used inside prescription printouts
+    // Prints medicine details in prescription format
     public void displayMedicineInfo() {
         System.out.println("    • " + medicineName);
         System.out.println("      Dosage: " + dosage);
@@ -46,7 +52,7 @@ public class Medicine implements Serializable {
         System.out.println("      Instructions: " + instructions);
     }
 
-    // Compact one-liner — useful for lists
+    // Short one-line summary
     public String getMedicineDetails() {
         return medicineName + " (" + dosage + ") - " + frequency +
                 " for " + durationDays + " days";

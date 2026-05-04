@@ -1,9 +1,14 @@
 package com.telemedicine.models;
 
-// Anything that needs to read/write its own state to disk
+/**
+ * Basic contract for classes that support save/load operations.
+ * Demonstrates abstraction through a shared persistence interface.
+ */
 public interface PersistableInterface {
 
+    // Save current state
     void save();
 
+    // Load saved state
     void load();
 }

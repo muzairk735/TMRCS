@@ -1,12 +1,17 @@
 package com.telemedicine.models;
 
-// Shared appointment-viewing contract for Doctor and Patient
+/**
+ * Common contract for classes that can manage appointments.
+ * Used by Patient and Doctor through abstraction.
+ */
 public interface AppointmentViewerInterface {
 
+    // View every appointment
     void viewAppointments();
 
     // Filter by status (PENDING, CONFIRMED, CANCELLED, ALL)
     void viewAppointments(String status);
 
+    // Cancel a selected appointment
     void cancelAppointment(String appointmentId);
 }

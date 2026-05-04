@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-// A single visit record tied to a patient — diagnosis, treatment, and test results
+/** Stores a single medical record entry for a patient, including diagnosis, treatment, and test results. */
 public class MedicalRecord implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -17,9 +17,16 @@ public class MedicalRecord implements Serializable {
     private ArrayList<String> testResults; // lab or imaging results added over time
     private String notes;
 
-    // Constructor
-    public MedicalRecord(String recordId, Patient patient, String diagnosis,
-                        String treatment, String doctorName) {
+    /**
+     * Creates a new medical record with today's date.
+     * Test results and notes start empty and can be added later.
+     */
+    public MedicalRecord(
+            String recordId,
+            Patient patient,
+            String diagnosis,
+            String treatment,
+            String doctorName) {
         this.recordId = recordId;
         this.patient = patient;
         this.recordDate = LocalDate.now();
@@ -30,7 +37,7 @@ public class MedicalRecord implements Serializable {
         this.notes = "";
     }
 
-    // Compact display — good for list views
+    /** Prints a compact summary of this record */
     public void displayRecord() {
         System.out.println("  Record ID: " + recordId);
         System.out.println("  Date: " + recordDate);
@@ -48,6 +55,7 @@ public class MedicalRecord implements Serializable {
         }
     }
 
+    /** Adds a test result string to this record */
     public void addTestResult(String result) {
         testResults.add(result);
         System.out.println("✓ Test result added: " + result);
@@ -58,7 +66,7 @@ public class MedicalRecord implements Serializable {
         System.out.println("✓ Notes updated.");
     }
 
-    // Full bordered display — used for detailed record view
+    /** Prints the full record in a bordered box with all fields */
     public void displayFullRecord() {
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║       MEDICAL RECORD DETAILS           ║");

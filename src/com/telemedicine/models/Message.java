@@ -4,7 +4,10 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-// A single chat message within a consultation session
+/**
+ * Represents a consultation message between doctor and patient.
+ * Encapsulates sender, text, time, and consultation mode in one object.
+ */
 public class Message implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -15,6 +18,7 @@ public class Message implements Serializable {
     private LocalDateTime timestamp;
     private String consultationMode; // VIDEO, PHONE, or CHAT
 
+    /** Creates a message with an auto-generated ID and timestamp. */
     public Message(
             String senderName,
             String senderType,
@@ -28,7 +32,7 @@ public class Message implements Serializable {
         this.consultationMode = consultationMode;
     }
 
-    // Pretty-prints the message with timestamp and role icon
+    // Displays a chat-style message
     public void displayMessage() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         String prefix = senderType.equals("DOCTOR") ? "Dr. " : "";

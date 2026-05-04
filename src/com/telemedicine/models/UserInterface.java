@@ -1,13 +1,18 @@
 package com.telemedicine.models;
 
-// Common contract for every user type (Patient, Doctor, Admin)
+/**
+ * Common user behavior shared by system users.
+ * Implemented by Person, then inherited by its subclasses.
+ */
 public interface UserInterface {
 
+    // Login contract
     boolean login(String email, String password);
 
+    // Profile display contract
     void displayProfile();
 
-    // Overloads — update only what's passed in
+    // Overloaded profile updates
     void updateProfile(String name);
 
     void updateProfile(String name, String email);
