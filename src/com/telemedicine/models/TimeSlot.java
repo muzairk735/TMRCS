@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 
+// A bookable time block on a doctor's calendar
 public class TimeSlot implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -13,7 +14,7 @@ public class TimeSlot implements Serializable {
     private LocalTime startTime;
     private LocalTime endTime;
     private boolean isAvailable;
-    private Doctor doctor;
+    private Doctor doctor; // the slot belongs to this doctor
 
     // Constructor
     public TimeSlot(String slotId, LocalDate date, LocalTime startTime,
@@ -33,7 +34,7 @@ public class TimeSlot implements Serializable {
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
-        this.isAvailable = true;
+        this.isAvailable = true; // new slots start as available
         this.doctor = doctor;
     }
 
@@ -45,6 +46,7 @@ public class TimeSlot implements Serializable {
         this.isAvailable = true;
     }
 
+    // A slot is only truly available if it's in the future and not already booked
     public boolean isSlotAvailable() {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
@@ -53,6 +55,7 @@ public class TimeSlot implements Serializable {
             return false;
         }
 
+        // Same-day slot that has already passed
         if (date.equals(today) && startTime.isBefore(now)) {
             return false;
         }
@@ -60,6 +63,7 @@ public class TimeSlot implements Serializable {
         return isAvailable;
     }
 
+    // Checks for overlap with another slot on the same day
     public boolean isConflict(TimeSlot otherSlot) {
         if (!this.date.equals(otherSlot.date)) {
             return false;

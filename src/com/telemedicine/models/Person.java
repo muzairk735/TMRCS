@@ -4,9 +4,11 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.regex.Pattern;
 
+// Base class for all users — holds common fields and validation logic
 public abstract class Person implements Serializable, UserInterface {
     private static final long serialVersionUID = 1L;
 
+    // Basic format checks — not RFC-perfect but good enough for this domain
     private static final Pattern EMAIL_PATTERN =
             Pattern.compile("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$");
     private static final Pattern PHONE_PATTERN =
@@ -18,6 +20,8 @@ public abstract class Person implements Serializable, UserInterface {
     protected String phoneNumber;
     protected String password;
     protected LocalDate registrationDate;
+
+    // --- Validators --- //
 
     private static void validateName(String name) {
         if (name == null || name.trim().isEmpty())
@@ -58,18 +62,21 @@ public abstract class Person implements Serializable, UserInterface {
         validatePassword(password);
         this.userId = userId;
         this.name = name.trim();
-        this.email = email.trim().toLowerCase();
+        this.email = email.trim().toLowerCase(); // always lowercase for consistent matching
         this.phoneNumber = phoneNumber.trim();
         this.password = password;
         this.registrationDate = LocalDate.now();
     }
 
+    // Each subclass decides how it displays itself
     public abstract void displayProfile();
 
+    // Simple email + password check — no hashing (plain-text passwords for now)
     public boolean login(String email, String password) {
         return this.email.equals(email) && this.password.equals(password);
     }
 
+    // Overloaded profile updaters — only touch the fields you pass
     public void updateProfile(String name) {
         setName(name);
     }
@@ -84,6 +91,8 @@ public abstract class Person implements Serializable, UserInterface {
         setEmail(email);
         setPhoneNumber(phone);
     }
+
+    // --- Getters & Setters --- //
 
     public String getUserId() {
         return userId;

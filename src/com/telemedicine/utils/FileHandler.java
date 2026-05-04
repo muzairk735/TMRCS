@@ -4,17 +4,19 @@ import com.telemedicine.models.*;
 import java.io.*;
 import java.util.ArrayList;
 
+// Handles reading and writing all system data to/from .dat files using Java serialization
 public class FileHandler implements PersistableInterface {
     private String dataDirectory = "data/";
 
     public FileHandler() {
+        // Create data directory if it doesn't exist yet
         File dir = new File(dataDirectory);
         if (!dir.exists()) {
             dir.mkdirs();
         }
     }
     
-    // PATIENT OPERATIONS
+    // --- PATIENT OPERATIONS --- //
 
     public void savePatients(ArrayList<Patient> patients) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
@@ -31,14 +33,15 @@ public class FileHandler implements PersistableInterface {
                 new FileInputStream(dataDirectory + "patients.dat"))) {
             return (ArrayList<Patient>) ois.readObject();
         } catch (FileNotFoundException e) {
-            return new ArrayList<>();
+            return new ArrayList<>(); // first run — no file yet
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Error loading patients: " + e.getMessage());
             return new ArrayList<>();
         }
     }
 
-    // DOCTOR OPERATIONS
+    // --- DOCTOR OPERATIONS --- //
+
     public void saveDoctors(ArrayList<Doctor> doctors) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
                 new FileOutputStream(dataDirectory + "doctors.dat"))) {
@@ -61,7 +64,7 @@ public class FileHandler implements PersistableInterface {
         }
     }
     
-    // APPOINTMENT OPERATIONS 
+    // --- APPOINTMENT OPERATIONS --- //
 
     public void saveAppointments(ArrayList<Appointment> appointments) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
@@ -85,7 +88,7 @@ public class FileHandler implements PersistableInterface {
         }
     }
     
-    //  ADMIN OPERATIONS 
+    // --- ADMIN OPERATIONS --- //
 
     public void saveAdmins(ArrayList<Admin> admins) {
         try (ObjectOutputStream oos = new ObjectOutputStream(
@@ -109,12 +112,15 @@ public class FileHandler implements PersistableInterface {
         }
     }
 
-    //  UTILITY METHODS 
+    // --- UTILITY METHODS --- //
+
+    // Quick sanity check before assuming data is ready to load
     public boolean dataFilesExist() {
         return new File(dataDirectory + "patients.dat").exists() &&
                 new File(dataDirectory + "doctors.dat").exists();
     }
 
+    // Wipes all .dat files — used by the reset/sample-data flow
     public void clearAllData() {
         new File(dataDirectory + "patients.dat").delete();
         new File(dataDirectory + "doctors.dat").delete();
@@ -123,6 +129,7 @@ public class FileHandler implements PersistableInterface {
         System.out.println("✓ All data cleared.");
     }
 
+    // These satisfy PersistableInterface but aren't used — saving happens per-entity above
     @Override
     public void save() {
         System.out.println("Saving all system data...");

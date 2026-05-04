@@ -6,6 +6,7 @@ import java.util.*;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 
+// Core application class — owns all data lists and drives the menu-based UI
 public class TelemedicineSystem {
 
     private ArrayList<Patient>     patients;
@@ -14,8 +15,8 @@ public class TelemedicineSystem {
     private ArrayList<Appointment> appointments;
     private FileHandler fileHandler;
     private Scanner scanner;
-    private Person currentUser;
-    private String currentUserType;
+    private Person currentUser;       // whoever is logged in right now
+    private String currentUserType;   // "PATIENT", "DOCTOR", or "ADMIN"
 
     public TelemedicineSystem() {
         patients     = new ArrayList<>();
@@ -27,10 +28,11 @@ public class TelemedicineSystem {
         currentUser  = null;
         currentUserType = null;
         loadAllData();
+        // Seed demo data on first run (no doctors saved yet)
         if (doctors.isEmpty()) addSampleData();
     }
 
-    // MAIN MENU 
+    // --- MAIN MENU --- //
 
     public void start() {
         while (true) {
@@ -83,7 +85,7 @@ public class TelemedicineSystem {
         System.out.println("╚════════════════════════════════════════╝\n");
     }
 
-    // PATIENT SECTION 
+    // --- PATIENT SECTION --- //
 
     private void patientLogin() {
         clearScreen();
@@ -110,6 +112,7 @@ public class TelemedicineSystem {
 
     private void patientDashboard() {
         Patient patient = (Patient) currentUser;
+        // Loop keeps the dashboard open until the patient explicitly logs out
         while (currentUserType != null && currentUserType.equals("PATIENT")) {
             try {
                 clearScreen();
@@ -186,6 +189,7 @@ public class TelemedicineSystem {
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║      PATIENT REGISTRATION              ║");
         System.out.println("╚════════════════════════════════════════╝\n");
+        // ID format: P1001, P1002, ... based on current count
         String userId = "P" + (patients.size() + 1001);
         System.out.print("Name: ");
         String name = scanner.nextLine().trim();
@@ -219,6 +223,7 @@ public class TelemedicineSystem {
         pauseScreen();
     }
 
+    // Shows a sub-menu so the patient can update individual fields
     private void updatePatientProfile(Patient patient) {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
@@ -277,6 +282,7 @@ public class TelemedicineSystem {
         pauseScreen();
     }
 
+    // Empty search term shows all doctors
     private void searchDoctors() {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
@@ -306,6 +312,7 @@ public class TelemedicineSystem {
         }
     }
 
+    // Walks the patient through picking a doctor, date, time slot, symptoms, and mode
     private void bookAppointment(Patient patient) {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
@@ -371,7 +378,8 @@ public class TelemedicineSystem {
         String modeStr = mode == 2 ? "PHONE" : mode == 3 ? "CHAT" : "VIDEO";
 
         patient.bookAppointment(selected, LocalDateTime.of(date, slot.getStartTime()), symptoms, modeStr);
-        slot.markAsBooked();
+        slot.markAsBooked(); // prevent double-booking
+        // Keep the master appointments list in sync
         appointments.add(patient.getAppointments().get(patient.getAppointments().size() - 1));
         pauseScreen();
     }
@@ -396,6 +404,7 @@ public class TelemedicineSystem {
         pauseScreen();
     }
 
+    // Only shows appointments that have at least one message — nothing to see otherwise
     private void viewConsultationChat(Patient patient) {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
@@ -422,7 +431,8 @@ public class TelemedicineSystem {
         patient.respondToChat(chats.get(choice - 1), scanner);
     }
 
-    // Doctor section
+    // --- DOCTOR SECTION --- //
+
     private void doctorLogin() {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
@@ -522,6 +532,7 @@ public class TelemedicineSystem {
         }
     }
 
+    // Lists PENDING and CONFIRMED appointments, then opens the selected one for messaging
     private void conductConsultation(Doctor doctor) {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
@@ -554,7 +565,8 @@ public class TelemedicineSystem {
         pauseScreen();
     }
 
-    // ADMIN SECTION
+    // --- ADMIN SECTION --- //
+
     private void adminLogin() {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
@@ -650,6 +662,7 @@ public class TelemedicineSystem {
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║         ADD NEW DOCTOR                 ║");
         System.out.println("╚════════════════════════════════════════╝\n");
+        // ID format: D1001, D1002, ... based on current count
         String userId = "D" + (doctors.size() + 1001);
         System.out.print("Name: ");
         String name = scanner.nextLine().trim();
@@ -725,6 +738,7 @@ public class TelemedicineSystem {
         }
     }
 
+    // Requires "yes" confirmation before removing — easy to undo if cancelled
     private void removeDoctor(Admin admin) {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
@@ -795,6 +809,9 @@ public class TelemedicineSystem {
         pauseScreen();
     }
 
+    // --- UTILITY METHODS --- //
+
+    // Keeps asking until we get a valid integer
     private int getMenuInput(String prompt) {
         while (true) {
             if (!prompt.isEmpty()) System.out.print(prompt);
@@ -806,6 +823,7 @@ public class TelemedicineSystem {
         }
     }
 
+    // Returns null on bad input — callers decide how to handle it
     private Integer parseIntInput() {
         try {
             return Integer.parseInt(scanner.nextLine().trim());
@@ -814,11 +832,13 @@ public class TelemedicineSystem {
         }
     }
 
+    // Clips long names so they don't break the fixed-width UI boxes
     private String truncate(String s, int max) {
         if (s == null) return "";
         return s.length() <= max ? s : s.substring(0, max - 1) + "…";
     }
 
+    // ANSI escape for non-Windows; falls back to blank lines on failure
     private void clearScreen() {
         try {
             if (System.getProperty("os.name").contains("Windows")) {
@@ -853,6 +873,7 @@ public class TelemedicineSystem {
         admins       = fileHandler.loadAdmins();
     }
 
+    // Wipes everything and rebuilds with demo accounts — also prints credentials to screen
     private void resetSampleData() {
         clearScreen();
         System.out.println("\n╔════════════════════════════════════════╗");
@@ -873,6 +894,7 @@ public class TelemedicineSystem {
             System.out.println("\n✗ Cancelled.");
         }
 
+        // Print credentials so testers know how to log in
         System.out.println("\n========== SAMPLE DATA LOADED ==========\n");
 
         System.out.println("---- Doctors ----");
@@ -901,6 +923,7 @@ public class TelemedicineSystem {
         pauseScreen();
     }
 
+    // Seed data — 3 doctors with 7-day availability, 1 admin, 1 patient
     private void addSampleData() {
         Doctor d1 = new Doctor(
                 "D001", "Fatima Khan", "fatima@hospital.com",

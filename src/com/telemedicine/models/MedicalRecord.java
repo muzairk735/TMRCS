@@ -4,17 +4,17 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+// A single visit record tied to a patient — diagnosis, treatment, and test results
 public class MedicalRecord implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    // Attributes
     private String recordId;
     private Patient patient;
     private LocalDate recordDate;
     private String diagnosis;
     private String treatment;
     private String doctorName;
-    private ArrayList<String> testResults;
+    private ArrayList<String> testResults; // lab or imaging results added over time
     private String notes;
 
     // Constructor
@@ -30,6 +30,7 @@ public class MedicalRecord implements Serializable {
         this.notes = "";
     }
 
+    // Compact display — good for list views
     public void displayRecord() {
         System.out.println("  Record ID: " + recordId);
         System.out.println("  Date: " + recordDate);
@@ -57,6 +58,7 @@ public class MedicalRecord implements Serializable {
         System.out.println("✓ Notes updated.");
     }
 
+    // Full bordered display — used for detailed record view
     public void displayFullRecord() {
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║       MEDICAL RECORD DETAILS           ║");

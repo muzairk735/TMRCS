@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
+// Represents a scheduled consultation between a patient and doctor
 public class Appointment implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -13,8 +14,8 @@ public class Appointment implements Serializable {
     private Doctor doctor;
     private LocalDateTime appointmentDateTime;
     private String symptoms;
-    private String status; // PENDING, CONFIRMED, CANCELLED
-    private String consultationMode; // VIDEO, PHONE, CHAT
+    private String status;              // PENDING → CONFIRMED or CANCELLED
+    private String consultationMode;    // VIDEO, PHONE, or CHAT
     private LocalDateTime createdAt;
     private Prescription prescription;
     private ArrayList<Message> consultationMessages;
@@ -32,12 +33,13 @@ public class Appointment implements Serializable {
         this.appointmentDateTime = appointmentDateTime;
         this.symptoms = symptoms;
         this.consultationMode = consultationMode;
-        this.status = "PENDING";
+        this.status = "PENDING"; // all appointments start as pending
         this.createdAt = LocalDateTime.now();
         this.consultationMessages = new ArrayList<>();
         this.prescription = null;
     }
 
+    // Only PENDING → CONFIRMED is allowed
     public void confirmAppointment() {
         if (status.equals("PENDING")) {
             this.status = "CONFIRMED";
@@ -47,6 +49,7 @@ public class Appointment implements Serializable {
         }
     }
 
+    // Cancellation cleans up the linked prescription from both sides
     public void cancelAppointment(String reason) {
         if (!status.equals("CONFIRMED")) {
             this.status = "CANCELLED";
@@ -65,6 +68,7 @@ public class Appointment implements Serializable {
         }
     }
 
+    // Marks appointment as CONFIRMED if it was in a bookable state
     public void completeAppointment() {
         if (status.equals("CONFIRMED") || status.equals("PENDING")) {
             this.status = "CONFIRMED";
@@ -84,6 +88,7 @@ public class Appointment implements Serializable {
         System.out.println("  Fee: Rs. " + doctor.getConsultationFee());
     }
 
+    // Used to warn patients about upcoming appointments
     public boolean isWithin24Hours() {
         LocalDateTime now = LocalDateTime.now();
         return appointmentDateTime.minusHours(24).isBefore(now) &&
@@ -126,6 +131,7 @@ public class Appointment implements Serializable {
         return prescription;
     }
 
+    // Setting a prescription also registers it on both patient and doctor
     public void setPrescription(Prescription prescription) {
         this.prescription = prescription;
         if (prescription != null) {
@@ -165,6 +171,7 @@ public class Appointment implements Serializable {
         }
     }
 
+    // Guard against null message list when deserializing old data
     private void readObject(java.io.ObjectInputStream ois)
             throws java.io.IOException, ClassNotFoundException {
         ois.defaultReadObject();

@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+// Represents a registered doctor — manages availability, appointments, and consultations
 public class Doctor extends Person implements Serializable, AppointmentViewerInterface {
     private static final long serialVersionUID = 1L;
 
@@ -20,7 +21,8 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
     private ArrayList<Appointment> appointments;
     private ArrayList<Prescription> issuedPrescriptions;
     private double rating;
-    private int totalRatings;
+    private int totalRatings; // used to compute running average
+
 
     //  Validators
     private static void validateSpecialization(String s) {
@@ -32,6 +34,7 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         }
     }
 
+    // Alphanumeric, hyphens allowed, 5-20 chars — matches PMC license format
     private static void validateLicenseNumber(String l) {
         if (l == null || l.trim().isEmpty()) {
             throw new IllegalArgumentException("License number cannot be empty.");
@@ -104,6 +107,9 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         System.out.println("╚" + "═".repeat(W) + "╝\n");
     }
 
+    // --- Shared display helpers (used by Patient and Admin too) --- //
+
+    // Prints a bordered row, truncating value if it's too wide
     public static void printRow(String label, String value, int innerWidth) {
         String prefix = " " + label + ": ";
         int valueWidth = innerWidth - prefix.length();
@@ -125,6 +131,9 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         return " ".repeat(left) + s + " ".repeat(right);
     }
 
+    // --- Availability management --- //
+
+    // Generates a unique slot ID using current timestamp
     public void setAvailability(LocalDate date, LocalTime startTime, LocalTime endTime) {
         String slotId = "SLOT" + System.currentTimeMillis();
         TimeSlot slot = new TimeSlot(slotId, date, startTime, endTime, this);
@@ -133,6 +142,7 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
                 " (" + startTime + " - " + endTime + ")");
     }
 
+    // Interactive availability setter — reads date/time from the console
     public void promptSetAvailability(Scanner scanner) {
         System.out.print("Enter date (DD-MM-YYYY): ");
         String dateStr = scanner.nextLine();
@@ -149,6 +159,7 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         }
     }
 
+    // Returns only slots on the given date that aren't already booked or in the past
     public ArrayList<TimeSlot> getAvailableSlots(LocalDate date) {
         ArrayList<TimeSlot> result = new ArrayList<>();
         for (TimeSlot slot : availability) {
@@ -159,6 +170,9 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         return result;
     }
 
+    // --- Appointment management --- //
+
+    // Filter view — pass "ALL" to show everything
     public void viewAppointments(String status) {
         ArrayList<Appointment> list = new ArrayList<>();
         if (status.equalsIgnoreCase("ALL")) {
@@ -199,6 +213,9 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         System.out.println("\n✗ Appointment not found.");
     }
 
+    // --- Consultation sessions --- //
+
+    // Entry point for a consultation — routes to the right session type by mode
     public void runConsultationSession(Appointment appointment, Scanner scanner) {
         Patient patient = appointment.getPatient();
         String mode = appointment.getConsultationMode();
@@ -228,6 +245,7 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         collectDoctorMessages(appointment, "CHAT", scanner);
     }
 
+    // Video adds start/end system messages for a clearer session trail
     private void runVideoConsultation(Appointment appointment, Scanner scanner) {
         printSessionHeader("VIDEO", appointment.getPatient().getName());
         showPreviousMessages(appointment);
@@ -257,6 +275,7 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         System.out.println("Send messages to " + patientName + " (type 'done' when finished)\n");
     }
 
+    // Shown before new messages so the doctor has context
     private void showPreviousMessages(Appointment appointment) {
         if (!appointment.getConsultationMessages().isEmpty()) {
             System.out.println("--- Previous Messages ---");
@@ -267,6 +286,7 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         }
     }
 
+    // Keeps reading messages until the doctor types 'done'
     private void collectDoctorMessages(Appointment appointment, String mode, Scanner scanner) {
         while (true) {
             System.out.print("Dr. " + name + ": ");
@@ -278,6 +298,9 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         }
     }
 
+    // --- Prescription management --- //
+
+    // Creates and immediately displays the prescription, then links it to both sides
     public void issuePrescription(
             Patient patient,
             String diagnosis,
@@ -291,6 +314,7 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         prescription.displayPrescription();
     }
 
+    // Interactive prescription builder — prompts for each medicine in a loop
     public void promptIssuePrescription(ArrayList<Patient> patients, Scanner scanner) {
         System.out.print("Enter Patient ID: ");
         String patientId = scanner.nextLine().trim();
@@ -344,6 +368,7 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         issuePrescription(selectedPatient, diagnosis, medicines, notes);
     }
 
+    // Prevents duplicates — safe to call multiple times
     public void addIssuedPrescription(Prescription p) {
         if (p != null) {
             if (issuedPrescriptions == null) issuedPrescriptions = new ArrayList<>();
@@ -369,6 +394,7 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         }
     }
 
+    // Marks the appointment as complete if it's in a valid state
     public void conductConsultation(Appointment a) {
         if (a.getStatus().equals("PENDING") || a.getStatus().equals("CONFIRMED")) {
             a.completeAppointment();
@@ -378,6 +404,7 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         }
     }
 
+    // Running weighted average — updates with each new rating
     public void addRating(double r) {
         if (r < 0 || r > 5) {
             System.out.println("Rating must be between 0 and 5.");
@@ -385,6 +412,8 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         }
         rating = (rating * totalRatings + r) / ++totalRatings;
     }
+
+    // --- Getters & Setters --- //
 
     public String getSpecialization() { 
         return specialization; 
@@ -435,6 +464,7 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         return issuedPrescriptions; 
     }
 
+    // Null-guard for issuedPrescriptions when loading serialized data from older versions
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         if (issuedPrescriptions == null) issuedPrescriptions = new ArrayList<>();

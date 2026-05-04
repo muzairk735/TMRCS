@@ -3,12 +3,12 @@ package com.telemedicine.models;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+// System administrator — manages doctors, patients, and views system-wide stats
 public class Admin extends Person implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String adminLevel; // super_admin, admin
+    private String adminLevel; // "admin" or "super_admin"
 
-    // Validator
     private static void validateAdminLevel(String level) {
         if (level == null || level.trim().isEmpty()) {
             throw new IllegalArgumentException("Admin level cannot be empty.");
@@ -47,6 +47,7 @@ public class Admin extends Person implements Serializable {
         System.out.println("╚" + "═".repeat(W) + "╝\n");
     }
 
+    // Prevents duplicate doctor IDs before adding to the list
     public void addDoctor(ArrayList<Doctor> doctorList, Doctor doctor) {
         if (doctorList.stream().anyMatch(d -> d.getUserId().equals(doctor.getUserId()))) {
             System.out.println("✗ Doctor with ID " + doctor.getUserId() + " already exists.");
@@ -56,6 +57,7 @@ public class Admin extends Person implements Serializable {
         System.out.println("✓ Doctor " + doctor.getName() + " added successfully.");
     }
 
+    // Cleans up the patient's prescriptions on the issuing doctors' side before removing
     public void removePatient(ArrayList<Patient> patientList, String patientId) {
         Patient patientToRemove = patientList.stream()
                 .filter(p -> p.getUserId().equals(patientId))
@@ -76,6 +78,7 @@ public class Admin extends Person implements Serializable {
         System.out.println("✓ Patient removed successfully (including all prescriptions).");
     }
 
+    // Mirrors removePatient — cleans up prescriptions on the patients' side first
     public void removeDoctor(ArrayList<Doctor> doctorList, String doctorId) {
         Doctor doctorToRemove = doctorList.stream()
                 .filter(d -> d.getUserId().equals(doctorId))
@@ -110,6 +113,7 @@ public class Admin extends Person implements Serializable {
         }
     }
 
+    // System health summary — counts by appointment status
     public void generateReport(
             ArrayList<Doctor> doctors,
             ArrayList<Patient> patients,

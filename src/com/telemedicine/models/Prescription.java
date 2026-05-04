@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+// Issued by a doctor during or after a consultation — links patient, doctor, and medicines
 public class Prescription implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -31,6 +32,7 @@ public class Prescription implements Serializable {
         this.additionalNotes = additionalNotes;
     }
 
+    // Skips null silently — safe to call multiple times
     public void addMedicine(Medicine medicine) {
         if (medicine != null) {
             this.medicines.add(medicine);
@@ -38,6 +40,7 @@ public class Prescription implements Serializable {
         }
     }
 
+    // Boxed display — shows all medicines with dosage details
     public void displayPrescription() {
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║          PRESCRIPTION                  ║");
@@ -67,6 +70,7 @@ public class Prescription implements Serializable {
         System.out.println("╚════════════════════════════════════════╝\n");
     }
 
+    // Plain text report — used for printing or logs
     public void generatePrescriptionReport() {
         System.out.println("\n═══════════════════════════════════════════");
         System.out.println("         PRESCRIPTION REPORT");

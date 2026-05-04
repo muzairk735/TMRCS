@@ -2,14 +2,15 @@ package com.telemedicine.models;
 
 import java.io.Serializable;
 
+// A single medicine entry inside a Prescription
 public class Medicine implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String medicineName;
-    private String dosage;
-    private String frequency;
+    private String dosage;       // e.g. "500mg"
+    private String frequency;   // e.g. "Twice daily"
     private int durationDays;
-    private String instructions;
+    private String instructions; // e.g. "Take after meals"
 
     public Medicine(
             String medicineName,
@@ -36,6 +37,7 @@ public class Medicine implements Serializable {
         this.instructions = (instructions != null) ? instructions.trim() : "";
     }
 
+    // Verbose display used inside prescription printouts
     public void displayMedicineInfo() {
         System.out.println("    • " + medicineName);
         System.out.println("      Dosage: " + dosage);
@@ -44,6 +46,7 @@ public class Medicine implements Serializable {
         System.out.println("      Instructions: " + instructions);
     }
 
+    // Compact one-liner — useful for lists
     public String getMedicineDetails() {
         return medicineName + " (" + dosage + ") - " + frequency +
                 " for " + durationDays + " days";

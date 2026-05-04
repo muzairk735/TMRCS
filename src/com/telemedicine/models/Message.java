@@ -4,22 +4,23 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+// A single chat message within a consultation session
 public class Message implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private String messageId;
     private String senderName;
-    private String senderType;    // "DOCTOR" or "PATIENT"
+    private String senderType;      // "DOCTOR" or "PATIENT"
     private String messageText;
     private LocalDateTime timestamp;
-    private String        consultationMode;
+    private String consultationMode; // VIDEO, PHONE, or CHAT
 
     public Message(
             String senderName,
             String senderType,
             String messageText,
             String consultationMode) {
-        this.messageId = "MSG" + System.currentTimeMillis();
+        this.messageId = "MSG" + System.currentTimeMillis(); // millisecond-based unique ID
         this.senderName = senderName;
         this.senderType = senderType;
         this.messageText = messageText;
@@ -27,6 +28,7 @@ public class Message implements Serializable {
         this.consultationMode = consultationMode;
     }
 
+    // Pretty-prints the message with timestamp and role icon
     public void displayMessage() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         String prefix = senderType.equals("DOCTOR") ? "Dr. " : "";

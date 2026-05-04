@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+// Represents a registered patient — can book appointments, chat with doctors, and view records
 public class Patient extends Person implements Serializable, AppointmentViewerInterface {
     private static final long serialVersionUID = 1L;
 
@@ -20,6 +21,8 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
     private ArrayList<MedicalRecord> medicalHistory;
     private ArrayList<Appointment>   appointments;
     private ArrayList<Prescription>  prescriptions;
+
+    // --- Validators --- //
 
     private static void validateAge(int age) {
         if (age < 0 || age > 150)
@@ -90,6 +93,7 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         System.out.println("╚" + "═".repeat(W) + "╝\n");
     }
 
+    // Creates the appointment, links it to both patient and doctor, then shows a summary
     public void bookAppointment(Doctor doctor, LocalDateTime dateTime, String symptoms, String mode) {
         String id = "APT" + System.currentTimeMillis();
         Appointment appt = new Appointment(id, this, doctor, dateTime, symptoms, mode);
@@ -102,6 +106,7 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         System.out.println("  Consultation Fee: Rs. " + doctor.getConsultationFee());
     }
 
+    // Shows all appointments regardless of status
     public void viewAppointments() {
         if (appointments.isEmpty()) {
             System.out.println("\n✗ No appointments found.");
@@ -116,6 +121,7 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         }
     }
 
+    // Filtered view — shows only appointments matching the given status
     public void viewAppointments(String status) {
         ArrayList<Appointment> filtered = new ArrayList<>();
         for (Appointment a : appointments) {
@@ -144,6 +150,7 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         System.out.println("\n✗ Appointment not found.");
     }
 
+    // Lets the patient type replies into an active consultation thread
     public void respondToChat(Appointment appointment, Scanner scanner) {
         int W = 38;
         System.out.println("\n╔" + "═".repeat(W) + "╗");
@@ -191,6 +198,7 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         medicalHistory.add(r);
     }
 
+    // Guards against nulls and duplicate entries
     public void addPrescription(Prescription p) {
         if (p != null) {
             if (prescriptions == null) prescriptions = new ArrayList<>();
@@ -258,6 +266,7 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
         return prescriptions; 
     }
 
+    // Null-guard for prescriptions when loading serialized data from older versions
     private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         ois.defaultReadObject();
         if (prescriptions == null) prescriptions = new ArrayList<>();
