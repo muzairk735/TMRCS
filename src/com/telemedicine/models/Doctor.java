@@ -214,42 +214,35 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
         appointment.confirmAppointment(); // auto-confirm when session starts
 
         // Delegate to the appropriate session handler
+        String patientName = patient.getName();
         switch (mode) {
-            case "VIDEO": runVideoConsultation(appointment, scanner); break;
-            case "PHONE": runPhoneConsultation(appointment, scanner); break;
-            default:      runChatSession(appointment, scanner);       break;
+            case "VIDEO":
+                printSessionHeader("VIDEO", patientName);
+                showPreviousMessages(appointment);
+                appointment.addConsultationMessage(
+                        new Message(name, "DOCTOR", "[Doctor initiated video consultation session]", "VIDEO"));
+                System.out.println("✓ Video consultation session started\n");
+                collectDoctorMessages(appointment, "VIDEO", scanner);
+                appointment.addConsultationMessage(
+                        new Message(name, "DOCTOR", "[Doctor ended video consultation session]", "VIDEO"));
+                break;
+            case "PHONE":
+                printSessionHeader("PHONE", patientName);
+                showPreviousMessages(appointment);
+                appointment.addConsultationMessage(
+                        new Message(name, "DOCTOR", "[Doctor initiated phone consultation]", "PHONE"));
+                System.out.println("✓ Phone consultation session started\n");
+                collectDoctorMessages(appointment, "PHONE", scanner);
+                appointment.addConsultationMessage(
+                        new Message(name, "DOCTOR", "[Doctor ended phone consultation]", "PHONE"));
+                break;
+            default:
+                printSessionHeader("CHAT", patientName);
+                showPreviousMessages(appointment);
+                collectDoctorMessages(appointment, "CHAT", scanner);
+                break;
         }
         System.out.println("\n✓ Messages sent. Patient will see them when they log in.");
-    }
-
-    private void runChatSession(Appointment appointment, Scanner scanner) {
-        printSessionHeader("CHAT", appointment.getPatient().getName());
-        showPreviousMessages(appointment);
-        collectDoctorMessages(appointment, "CHAT", scanner);
-    }
-
-    private void runVideoConsultation(Appointment appointment, Scanner scanner) {
-        printSessionHeader("VIDEO", appointment.getPatient().getName());
-        showPreviousMessages(appointment);
-        // Log session start event as a message
-        appointment.addConsultationMessage(
-                new Message(name, "DOCTOR", "[Doctor initiated video consultation session]", "VIDEO"));
-        System.out.println("✓ Video consultation session started\n");
-        collectDoctorMessages(appointment, "VIDEO", scanner);
-        // Log session end event
-        appointment.addConsultationMessage(
-                new Message(name, "DOCTOR", "[Doctor ended video consultation session]", "VIDEO"));
-    }
-
-    private void runPhoneConsultation(Appointment appointment, Scanner scanner) {
-        printSessionHeader("PHONE", appointment.getPatient().getName());
-        showPreviousMessages(appointment);
-        appointment.addConsultationMessage(
-                new Message(name, "DOCTOR", "[Doctor initiated phone consultation]", "PHONE"));
-        System.out.println("✓ Phone consultation session started\n");
-        collectDoctorMessages(appointment, "PHONE", scanner);
-        appointment.addConsultationMessage(
-                new Message(name, "DOCTOR", "[Doctor ended phone consultation]", "PHONE"));
     }
 
     private void printSessionHeader(String mode, String patientName) {
