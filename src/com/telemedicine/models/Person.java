@@ -27,35 +27,6 @@ public abstract class Person implements Serializable, UserInterface {
     protected String password;
     protected LocalDate registrationDate;
 
-    // --- Input validation helpers ---
-
-    private static void validateName(String name) {
-        if (name == null || name.trim().isEmpty())
-            throw new IllegalArgumentException("Name cannot be empty.");
-                if (name.trim().length() < 2)
-            throw new IllegalArgumentException("Name must be at least 2 characters.");
-            }
-
-    private static void validateEmail(String email) {
-        if (email == null || email.trim().isEmpty())
-            throw new IllegalArgumentException("Email cannot be empty.");
-                if (!EMAIL_PATTERN.matcher(email.trim()).matches())
-            throw new IllegalArgumentException("Invalid email format: " + email);
-            }
-
-    private static void validatePhone(String phone) {
-        if (phone == null || phone.trim().isEmpty())
-            throw new IllegalArgumentException("Phone number cannot be empty.");
-                if (!PHONE_PATTERN.matcher(phone.trim()).matches())
-            throw new IllegalArgumentException(
-                    "Invalid phone number. Must be 10-15 digits, optionally starting with '+'.");
-            }
-
-    private static void validatePassword(String password) {
-        if (password == null || password.length() < 6)
-            throw new IllegalArgumentException("Password must be at least 6 characters.");
-            }
-
     /**
      * Constructs a Person with validated credentials.
      * All input is validated before assignment — encapsulation in action.
@@ -66,15 +37,11 @@ public abstract class Person implements Serializable, UserInterface {
             String email,
             String phoneNumber,
             String password) {
-        validateName(name);
-        validateEmail(email);
-        validatePhone(phoneNumber);
-        validatePassword(password);
+        setName(name);
+        setEmail(email);
+        setPhoneNumber(phoneNumber);
+        setPassword(password);
         this.userId = userId;
-        this.name = name.trim();
-        this.email = email.trim().toLowerCase(); // always lowercase for consistent matching
-        this.phoneNumber = phoneNumber.trim();
-        this.password = password;
         this.registrationDate = LocalDate.now();
     }
 
@@ -116,7 +83,10 @@ public abstract class Person implements Serializable, UserInterface {
     }
 
     public void setName(String name) {
-        validateName(name);
+        if (name == null || name.trim().isEmpty())
+            throw new IllegalArgumentException("Name cannot be empty.");
+        if (name.trim().length() < 2)
+            throw new IllegalArgumentException("Name must be at least 2 characters.");
         this.name = name.trim();
     }
 
@@ -125,7 +95,10 @@ public abstract class Person implements Serializable, UserInterface {
     }
 
     public void setEmail(String email) {
-        validateEmail(email);
+        if (email == null || email.trim().isEmpty())
+            throw new IllegalArgumentException("Email cannot be empty.");
+        if (!EMAIL_PATTERN.matcher(email.trim()).matches())
+            throw new IllegalArgumentException("Invalid email format: " + email);
         this.email = email.trim().toLowerCase();
     }
 
@@ -134,7 +107,11 @@ public abstract class Person implements Serializable, UserInterface {
     }
 
     public void setPhoneNumber(String phoneNumber) {
-        validatePhone(phoneNumber);
+        if (phoneNumber == null || phoneNumber.trim().isEmpty())
+            throw new IllegalArgumentException("Phone number cannot be empty.");
+        if (!PHONE_PATTERN.matcher(phoneNumber.trim()).matches())
+            throw new IllegalArgumentException(
+                    "Invalid phone number. Must be 10-15 digits, optionally starting with '+'.");
         this.phoneNumber = phoneNumber.trim();
     }
 
@@ -147,7 +124,8 @@ public abstract class Person implements Serializable, UserInterface {
     }
 
     public void setPassword(String password) {
-        validatePassword(password);
+        if (password == null || password.length() < 6)
+            throw new IllegalArgumentException("Password must be at least 6 characters.");
         this.password = password;
     }
 }

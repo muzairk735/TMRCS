@@ -13,17 +13,6 @@ public class Admin extends Person implements Serializable {
 
     private String adminLevel; // "admin" or "super_admin"
 
-    private static void validateAdminLevel(String level) {
-        if (level == null || level.trim().isEmpty()) {
-            throw new IllegalArgumentException("Admin level cannot be empty.");
-        }
-        String l = level.trim().toLowerCase();
-        if (!l.equals("admin") && !l.equals("super_admin")) {
-            throw new IllegalArgumentException(
-                    "Admin level must be 'admin' or 'super_admin'.");
-        }
-    }
-
     /**
      * Constructs an Admin by delegating to Person's constructor,
      * then setting the admin-specific level field.
@@ -36,8 +25,7 @@ public class Admin extends Person implements Serializable {
             String password,
             String adminLevel) {
         super(userId, name, email, phoneNumber, password);
-        validateAdminLevel(adminLevel);
-        this.adminLevel = adminLevel.trim().toLowerCase();
+        setAdminLevel(adminLevel);
     }
 
     /**
@@ -165,7 +153,14 @@ public class Admin extends Person implements Serializable {
     }
 
     public void setAdminLevel(String adminLevel) {
-        validateAdminLevel(adminLevel);
-        this.adminLevel = adminLevel.trim().toLowerCase();
+        if (adminLevel == null || adminLevel.trim().isEmpty()) {
+            throw new IllegalArgumentException("Admin level cannot be empty.");
+        }
+        String level = adminLevel.trim().toLowerCase();
+        if (!level.equals("admin") && !level.equals("super_admin")) {
+            throw new IllegalArgumentException(
+                    "Admin level must be 'admin' or 'super_admin'.");
+        }
+        this.adminLevel = level;
     }
 }

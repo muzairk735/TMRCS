@@ -31,43 +31,6 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
     private double rating;
     private int totalRatings;
 
-    // --- Input validation helpers ---
-
-    private static void validateSpecialization(String s) {
-        if (s == null || s.trim().isEmpty()) {
-            throw new IllegalArgumentException("Specialization cannot be empty.");
-        }
-        if (s.trim().length() < 3) {
-            throw new IllegalArgumentException("Specialization must be at least 3 characters.");
-        }
-    }
-
-    // Alphanumeric, hyphens allowed, 5-20 chars — matches PMC license format
-    private static void validateLicenseNumber(String l) {
-        if (l == null || l.trim().isEmpty()) {
-            throw new IllegalArgumentException("License number cannot be empty.");
-        }
-        if (!l.trim().matches("^[A-Za-z0-9\\-]{5,20}$")) {
-            throw new IllegalArgumentException(
-                    "License number must be 5-20 alphanumeric characters (hyphens allowed).");
-        }
-    }
-
-    private static void validateExperienceYears(int y) {
-        if (y < 0 || y > 70) {
-            throw new IllegalArgumentException("Experience years must be between 0 and 70.");
-        }
-    }
-
-    private static void validateConsultationFee(double f) {
-        if (f < 0) {
-            throw new IllegalArgumentException("Consultation fee cannot be negative.");
-        }
-        if (f > 1_000_000) {
-            throw new IllegalArgumentException("Consultation fee is unrealistically high.");
-        }
-    }
-
     /**
      * Constructs a Doctor by first calling Person's constructor,
      * then validating and assigning doctor-specific fields.
@@ -83,14 +46,10 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
             int experienceYears,
             double consultationFee) {
         super(userId, name, email, phoneNumber, password);
-        validateSpecialization(specialization);
-        validateLicenseNumber(licenseNumber);
-        validateExperienceYears(experienceYears);
-        validateConsultationFee(consultationFee);
-        this.specialization = specialization.trim();
-        this.licenseNumber = licenseNumber.trim().toUpperCase();
-        this.experienceYears = experienceYears;
-        this.consultationFee = consultationFee;
+        setSpecialization(specialization);
+        setLicenseNumber(licenseNumber);
+        setExperienceYears(experienceYears);
+        setConsultationFee(consultationFee);
         this.availability = new ArrayList<>();
         this.appointments = new ArrayList<>();
         this.issuedPrescriptions = new ArrayList<>();
@@ -452,33 +411,52 @@ public class Doctor extends Person implements Serializable, AppointmentViewerInt
     public String getSpecialization() { 
         return specialization; 
     }
-    public void setSpecialization(String s) { 
-        validateSpecialization(s); 
-        this.specialization = s.trim(); 
+    public void setSpecialization(String s) {
+        if (s == null || s.trim().isEmpty()) {
+            throw new IllegalArgumentException("Specialization cannot be empty.");
+        }
+        if (s.trim().length() < 3) {
+            throw new IllegalArgumentException("Specialization must be at least 3 characters.");
+        }
+        this.specialization = s.trim();
     }
 
     public String getLicenseNumber() {
         return licenseNumber; 
     }
-    public void setLicenseNumber(String l) { 
-        validateLicenseNumber(l); 
-        this.licenseNumber = l.trim().toUpperCase(); 
+    // Alphanumeric, hyphens allowed, 5-20 chars — matches PMC license format
+    public void setLicenseNumber(String l) {
+        if (l == null || l.trim().isEmpty()) {
+            throw new IllegalArgumentException("License number cannot be empty.");
+        }
+        if (!l.trim().matches("^[A-Za-z0-9\\-]{5,20}$")) {
+            throw new IllegalArgumentException(
+                    "License number must be 5-20 alphanumeric characters (hyphens allowed).");
+        }
+        this.licenseNumber = l.trim().toUpperCase();
     }
 
     public int getExperienceYears() { 
         return experienceYears; 
     }
-    public void setExperienceYears(int y) { 
-        validateExperienceYears(y); 
-        this.experienceYears = y; 
+    public void setExperienceYears(int y) {
+        if (y < 0 || y > 70) {
+            throw new IllegalArgumentException("Experience years must be between 0 and 70.");
+        }
+        this.experienceYears = y;
     }
 
     public double getConsultationFee() { 
         return consultationFee; 
     }
-    public void setConsultationFee(double f) { 
-        validateConsultationFee(f); 
-        this.consultationFee = f; 
+    public void setConsultationFee(double f) {
+        if (f < 0) {
+            throw new IllegalArgumentException("Consultation fee cannot be negative.");
+        }
+        if (f > 1_000_000) {
+            throw new IllegalArgumentException("Consultation fee is unrealistically high.");
+        }
+        this.consultationFee = f;
     }
 
     public double getRating() { 

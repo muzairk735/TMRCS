@@ -29,36 +29,6 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
     private ArrayList<Appointment>   appointments;
     private ArrayList<Prescription>  prescriptions;
 
-    // --- Input validation helpers ---
-
-    private static void validateAge(int age) {
-        if (age < 0 || age > 150) {
-            throw new IllegalArgumentException("Age must be between 0 and 150.");
-        }
-    }
-
-    private static void validateGender(String gender) {
-        if (gender == null || gender.trim().isEmpty())
-            throw new IllegalArgumentException("Gender cannot be empty.");
-        String g = gender.trim().toUpperCase();
-        if (!g.equals("MALE") && !g.equals("FEMALE") )
-            throw new IllegalArgumentException("Gender must be MALE OR FEMALE.");
-        }
-    private static void validateBloodGroup(String bg) {
-        if (bg == null || bg.trim().isEmpty())
-            throw new IllegalArgumentException("Blood group cannot be empty.");
-        String b = bg.trim().toUpperCase();
-        for (String v : VALID_BLOOD_GROUPS) if (v.equals(b)) return;
-        throw new IllegalArgumentException(
-                "Invalid blood group. Must be one of: A+, A-, B+, B-, AB+, AB-, O+, O-.");
-    }
-
-    private static void validateAddress(String a) {
-        if (a == null || a.trim().isEmpty()) {
-            throw new IllegalArgumentException("Address cannot be empty.");
-        }
-    }
-
     /**
      * Constructs a Patient by calling the parent Person constructor first,
      * then validating and setting patient-specific fields.
@@ -74,14 +44,10 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
             String bloodGroup,
             String address) {
         super(userId, name, email, phoneNumber, password); // call Person constructor
-        validateAge(age);
-        validateGender(gender);
-        validateBloodGroup(bloodGroup);
-        validateAddress(address);
-        this.age = age;
-        this.gender = gender.trim().toUpperCase();
-        this.bloodGroup = bloodGroup.trim().toUpperCase();
-        this.address = address.trim();
+        setAge(age);
+        setGender(gender);
+        setBloodGroup(bloodGroup);
+        setAddress(address);
         this.medicalHistory = new ArrayList<>();
         this.appointments   = new ArrayList<>();
         this.prescriptions  = new ArrayList<>();
@@ -254,33 +220,48 @@ public class Patient extends Person implements Serializable, AppointmentViewerIn
     public int getAge() { 
         return age; 
     }
-    public void setAge(int a) { 
-        validateAge(a); 
-        this.age = a; 
+    public void setAge(int a) {
+        if (a < 0 || a > 150) {
+            throw new IllegalArgumentException("Age must be between 0 and 150.");
+        }
+        this.age = a;
     }
 
     public String getGender() { 
         return gender; 
     }
-    public void setGender(String g) { 
-        validateGender(g); 
-        this.gender = g.trim().toUpperCase(); 
+    public void setGender(String g) {
+        if (g == null || g.trim().isEmpty())
+            throw new IllegalArgumentException("Gender cannot be empty.");
+        String normalized = g.trim().toUpperCase();
+        if (!normalized.equals("MALE") && !normalized.equals("FEMALE"))
+            throw new IllegalArgumentException("Gender must be MALE OR FEMALE.");
+        this.gender = normalized;
     }
 
     public String getBloodGroup() { 
         return bloodGroup; 
     }
-    public void setBloodGroup(String b) { 
-        validateBloodGroup(b); 
-        this.bloodGroup = b.trim().toUpperCase(); 
+    public void setBloodGroup(String b) {
+        if (b == null || b.trim().isEmpty())
+            throw new IllegalArgumentException("Blood group cannot be empty.");
+        String normalized = b.trim().toUpperCase();
+        for (String v : VALID_BLOOD_GROUPS) if (v.equals(normalized)) {
+            this.bloodGroup = normalized;
+            return;
+        }
+        throw new IllegalArgumentException(
+                "Invalid blood group. Must be one of: A+, A-, B+, B-, AB+, AB-, O+, O-.");
     }
 
     public String getAddress() { 
         return address; 
     }
-    public void setAddress(String a) { 
-        validateAddress(a); 
-        this.address = a.trim(); 
+    public void setAddress(String a) {
+        if (a == null || a.trim().isEmpty()) {
+            throw new IllegalArgumentException("Address cannot be empty.");
+        }
+        this.address = a.trim();
     }
 
     public ArrayList<Appointment>   getAppointments()   { 
