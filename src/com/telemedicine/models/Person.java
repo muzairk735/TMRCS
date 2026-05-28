@@ -2,6 +2,7 @@ package com.telemedicine.models;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
@@ -58,18 +59,60 @@ public abstract class Person implements Serializable, UserInterface {
 
     // Overloaded updateProfile methods — update name only, name+email, or all three
     public void updateProfile(String name) {
-        setName(name);
+        updateProfile(name, this.email);
     }
 
     public void updateProfile(String name, String email) {
-        setName(name);
-        setEmail(email);
+        updateProfile(name, email, this.phoneNumber);
     }
 
     public void updateProfile(String name, String email, String phone) {
         setName(name);
         setEmail(email);
         setPhoneNumber(phone);
+    }
+
+    // --- Shared display utility methods (used by Doctor, Patient, Admin, and TelemedicineSystem) ---
+
+    /** Prints a single labeled row inside a bordered profile box */
+    public static void printRow(String label, String value, int innerWidth) {
+        String prefix = " " + label + ": ";
+        int valueWidth = innerWidth - prefix.length();
+        if (valueWidth < 1) valueWidth = 1;
+        String v = value != null ? value : "";
+        if (v.length() > valueWidth) v = v.substring(0, valueWidth - 1) + "…";
+        System.out.println("║" + prefix + padRight(v, valueWidth) + "║");
+    }
+
+    /** Pads a string with spaces on the right to fill the given width */
+    public static String padRight(String s, int width) {
+        if (s.length() >= width) return s;
+        return s + " ".repeat(width - s.length());
+    }
+
+    /** Centers a string within the given width using spaces */
+    public static String center(String s, int width) {
+        int pad = width - s.length();
+        int left = pad / 2;
+        int right = pad - left;
+        return " ".repeat(left) + s + " ".repeat(right);
+    }
+
+    /**
+     * Shared helper: finds an appointment by ID in a list and cancels it.
+     * Used by both Doctor.cancelAppointment and Patient.cancelAppointment.
+     */
+    public static void cancelAppointmentById(
+            ArrayList<com.telemedicine.models.Appointment> appointments,
+            String appointmentId,
+            String reason) {
+        for (com.telemedicine.models.Appointment a : appointments) {
+            if (a.getAppointmentId().equals(appointmentId)) {
+                a.cancelAppointment(reason);
+                return;
+            }
+        }
+        System.out.println("\n✗ Appointment not found.");
     }
 
     // --- Getters and validated setters ---

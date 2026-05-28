@@ -47,14 +47,9 @@ public class TimeSlot implements Serializable {
         this.doctor = doctor;
     }
 
-    // Marks the slot as taken
-    public void markAsBooked() {
-        this.isAvailable = false;
-    }
-
-    // Makes the slot available again
-    public void markAsAvailable() {
-        this.isAvailable = true;
+    // Sets availability — use setAvailable(false) to book, setAvailable(true) to release
+    public void setAvailable(boolean available) {
+        this.isAvailable = available;
     }
 
     // Also checks past dates and times
